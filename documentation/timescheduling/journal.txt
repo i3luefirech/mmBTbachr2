@@ -35,6 +35,7 @@ W5:
     - https://www.kernel.org/doc/Documentation/input/input.txt
     - http://cmp.felk.cvut.cz/~pisa/linux/mousedrivers.pdf
     - https://unix.stackexchange.com/questions/388053/disable-mouse-pointer-but-read-the-mouse-events
+    - https://askubuntu.com/questions/1043832/difference-between-dev-input-mouse0-and-dev-input-mice
 - Ersatzlösung:
     - libgpm https://www.linuxjournal.com/article/4600
     - https://github.com/telmich/gpm

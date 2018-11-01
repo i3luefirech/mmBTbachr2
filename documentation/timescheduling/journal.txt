@@ -19,6 +19,7 @@ W3:
 
 W4:
 
+- 05.10.2018, 17.30, Kickoff-Meeting
 - Synergy einigermassen verstanden
 - Lässt eine Maus übers Netzwerk auf einem anderen PC verwenden
 - Benutz den selben Curser, die externe Maus ist einer zweiten lokalen gleichgesetzt
@@ -29,17 +30,19 @@ W4:
 W5:
 
 - Lösungsansatz für Linux und OSX definiert
-- Lösungsansatz: Direkter zugriff auf /dev/input/mice etc.
+- Lösungsansatz: Direkter zugriff auf /dev/input/mice etc. evtl. kombiniert mit Xserver
 - Weitere Infos zu Lösungsansatz
     - https://unix.stackexchange.com/questions/25601/how-do-mouse-events-work-in-linux
     - https://www.kernel.org/doc/Documentation/input/input.txt
     - http://cmp.felk.cvut.cz/~pisa/linux/mousedrivers.pdf
     - https://unix.stackexchange.com/questions/388053/disable-mouse-pointer-but-read-the-mouse-events
     - https://askubuntu.com/questions/1043832/difference-between-dev-input-mouse0-and-dev-input-mice
-- Ersatzlösung:
-    - Xserver, siehe P2
+- Ersatzlösung (evtl. Teillösung von Lösungsansatz):
+    - Xserver
+    - siehe P2
     - https://unix.stackexchange.com/questions/397339/xcb-asynchronous-pointer-grab-not-propagating-events
     - https://www.systutorials.com/docs/linux/man/3-XSendEvent/
+    - https://www.x.org/wiki/guide/debugging/
 - Ersatzlösung:
     - libgpm https://www.linuxjournal.com/article/4600
     - https://github.com/telmich/gpm
@@ -57,7 +60,7 @@ W7:
 
 - Geplanter PoC Code muss nicht erstellt werden, alle kritischen Sachen in P2 abgefangen
 - Wegen Arbeit, leider keine weitere Zeit investiert in die Lösungssuche für Windows
-- Wegen Arbeit, leider keine weitere Zeit investiert in PM
+- Wegen Arbeit, leider nur wenig Zeit in PM investiert
 
 W8:
 

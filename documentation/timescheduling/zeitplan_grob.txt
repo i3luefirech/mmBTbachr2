@@ -3,40 +3,40 @@ Zeitplan (grob)
 
 Woche:		Ziel:															Erreicht:
 
-W1:			- Infoanlass besuchen											- besucht
-			- Studiere Aufgabenstellung										- erledigt
+W1:			- Infoanlass besuchen
+			- Studiere Aufgabenstellung
 
-W2:			- Grobe Planung													- teilweise erledigt (Grober Zeitplan, weitere Planung muss noch erledigt werden)
-			- Termine abmachen												- wird bei Kickoff-Meeting mit Andreas Danuser erledigt, W3
+W2:			- Grobe Planung
+			- Termine abmachen
 
 W3:			- Suche nach existierenden Produkten
 			- Sammle Informationen über gefundene Produkte
-			* Termine abmachen												- erledigt, Termine definiert beim Meeting am 05.Okt 2018
+			* Termine abmachen												
 
-W4:			- Einlesen in mögliche OpenSource Projekte						- Einlesen in Synergy, oder besser, in open source teil https://github.com/symless/synergy-core
-			- Finde Lösungsansätze											- @work
-			- Starte mit PM für die SW-Entwicklung							- @work
-																			* bestelle Mac mini für test unter OSX
-																			* sende aktuelle Grobplanung
-
-W5:			- Detailiertes PM für Lösungsansätze
+W4:			- Einlesen in mögliche OpenSource Projekte
 			- Finde Lösungsansätze
-			- Erstelle weiteren nötigen Proof of Concept Code
+			- Starte mit PM für die SW-Entwicklung
+
+W5:			- Finde Lösungsansätze
 			* Weiter Einlesen in Synergy
 			* Erstelle Github Repository
+
+W6:			* Finde Lösungsansätze
+			* Detailiertes PM für Lösungsansätze
+
+W7:			* Detailiertes PM für Lösungsansätze
+			* Erstelle nötigen Proof of Concept Code
+
+W8:			* Finde Lösungsansatz für Windows
+			* Starte mit "richtigem" Codeing
+			* Detailiertes PM für Lösungsansätze
+			* Implementation nach PM
 			* Erstelle template Files für alle Abgabedokumente
 
-W6:			- Starte mit "richtigem" Codeing
-			- Implementation nach PM
+W9:			* Implementation nach PM
 
-W7:			- Implementation nach PM
-
-W8:			- Implementation nach PM
-
-W9:			- Teste Code
-			- Fixe Code
-
-W10:		- Teste Code
+W10:		* Implementation nach PM
+			- Teste Code
 			- Fixe Code
 
 W11:		- Starte PM für erweiterte Funktionalität

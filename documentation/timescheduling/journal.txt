@@ -37,6 +37,9 @@ W5:
     - https://unix.stackexchange.com/questions/388053/disable-mouse-pointer-but-read-the-mouse-events
     - https://askubuntu.com/questions/1043832/difference-between-dev-input-mouse0-and-dev-input-mice
 - Ersatzlösung:
+    - Xserver, siehe P2
+    - https://unix.stackexchange.com/questions/397339/xcb-asynchronous-pointer-grab-not-propagating-events
+- Ersatzlösung:
     - libgpm https://www.linuxjournal.com/article/4600
     - https://github.com/telmich/gpm
 - Lösung Windows noch offen! Noch keine schlaue Lösung gefunden
@@ -44,6 +47,8 @@ W5:
 W6:
 
 - Lösung Windows noch offen! Noch keine schlaue Lösung gefunden
+    - https://docs.microsoft.com/en-us/windows-hardware/drivers/samples/input-driver-samples
+    - https://github.com/Microsoft/Windows-driver-samples/blob/master/input/moufiltr/moufiltr.c
 - Scope für Projekt erstellt
 - Grobe Klassendiagramme für Projekt erstellt
 

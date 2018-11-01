@@ -39,6 +39,7 @@ W5:
 - Ersatzlösung:
     - Xserver, siehe P2
     - https://unix.stackexchange.com/questions/397339/xcb-asynchronous-pointer-grab-not-propagating-events
+    - https://www.systutorials.com/docs/linux/man/3-XSendEvent/
 - Ersatzlösung:
     - libgpm https://www.linuxjournal.com/article/4600
     - https://github.com/telmich/gpm

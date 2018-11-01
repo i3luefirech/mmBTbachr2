@@ -1,0 +1,69 @@
+Zeitplan (grob)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Woche:		Ziel:															Erreicht:
+
+W1:			- Infoanlass besuchen											- besucht
+			- Studiere Aufgabenstellung										- erledigt
+
+W2:			- Grobe Planung													- teilweise erledigt (Grober Zeitplan, weitere Planung muss noch erledigt werden)
+			- Termine abmachen												- wird bei Kickoff-Meeting mit Andreas Danuser erledigt, W3
+
+W3:			- Suche nach existierenden Produkten
+			- Sammle Informationen über gefundene Produkte
+			* Termine abmachen												- erledigt, Termine definiert beim Meeting am 05.Okt 2018
+
+W4:			- Einlesen in mögliche OpenSource Projekte						- Einlesen in Synergy, oder besser, in open source teil https://github.com/symless/synergy-core
+			- Finde Lösungsansätze											- @work
+			- Starte mit PM für die SW-Entwicklung							- @work
+																			* bestelle Mac mini für test unter OSX
+																			* sende aktuelle Grobplanung
+
+W5:			- Detailiertes PM für Lösungsansätze
+			- Finde Lösungsansätze
+			- Erstelle weiteren nötigen Proof of Concept Code
+			* Weiter Einlesen in Synergy
+			* Erstelle Github Repository
+			* Erstelle template Files für alle Abgabedokumente
+
+W6:			- Starte mit "richtigem" Codeing
+			- Implementation nach PM
+
+W7:			- Implementation nach PM
+
+W8:			- Implementation nach PM
+
+W9:			- Teste Code
+			- Fixe Code
+
+W10:		- Teste Code
+			- Fixe Code
+
+W11:		- Starte PM für erweiterte Funktionalität
+			- Plane Video
+			- Plane Plakat
+			- Synchronisiere Doku Inhalt mit gemachter Arbeit
+
+W12:		- Implementiere weitere Funktionalität nach PM
+
+W13:		- Implementiere weitere Funktionalität nach PM
+			- Teste Code
+			- Fixe Code
+
+W14:		- Teste Code
+			- Fixe Code
+			- Synchronisiere Doku Inhalt mit gemachter Arbeit
+
+W15:		- Erstelle Video
+			- Erstelle Plakat
+			- Erstelle Folien
+			- Erstelle erste fertige Doku
+
+W16:		- Beende/säubere Doku
+			- Beende/säubere Code
+			- Finaltag
+
+Bedeutung
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Eintrag von normaler Planung
+* neu hinzugefügt durch eintretten spezieller Events, oder durch nichterreichen der Vorwochenplanung

@@ -1,1 +1,57 @@
+Journal
 
+W1:
+
+- Grobinformationen zum Ablauf erhalten
+- Genaue Aufgabenstellung erhalten
+- Beginn studieren der Aufgabenstellung
+
+W2:
+
+- Groben Zeitplan erstellt
+- Termin mit Andreas Danuser vereinbart für das Kickoff Meeting
+
+W3:
+
+- Suche nach existierenden Prdukten
+- Synergy (https://symless.com/synergy)
+- Synergy-core (https://github.com/symless/synergy-core)
+
+W4:
+
+- Synergy einigermassen verstanden
+- Lässt eine Maus übers Netzwerk auf einem anderen PC verwenden
+- Benutz den selben Curser, die externe Maus ist einer zweiten lokalen gleichgesetzt
+- Einige Ansätze könnten nützlich sein, versucht aber nicht ganz das selbe Problem zu Lösen, die externe Maus verwendet den selben Cursor
+- Bestellung von Mac mini ausgelöst, wird benötigt für tests unter OSX
+- Grobplanung versendet
+
+W5:
+
+- Lösungsansatz für Linux und OSX definiert
+- Lösungsansatz: Direkter zugriff auf /dev/input/mice etc.
+- Weitere Infos zu Lösungsansatz
+    - https://unix.stackexchange.com/questions/25601/how-do-mouse-events-work-in-linux
+    - https://www.kernel.org/doc/Documentation/input/input.txt
+    - http://cmp.felk.cvut.cz/~pisa/linux/mousedrivers.pdf
+    - https://unix.stackexchange.com/questions/388053/disable-mouse-pointer-but-read-the-mouse-events
+- Ersatzlösung:
+    - libgpm https://www.linuxjournal.com/article/4600
+    - https://github.com/telmich/gpm
+- Lösung Windows noch offen! Noch keine schlaue Lösung gefunden
+
+W6:
+
+- Lösung Windows noch offen! Noch keine schlaue Lösung gefunden
+- Scope für Projekt erstellt
+- Grobe Klassendiagramme für Projekt erstellt
+
+W7:
+
+- Geplanter PoC Code muss nicht erstellt werden, alle kritischen Sachen in P2 abgefangen
+- Wegen Arbeit, leider keine weitere Zeit investiert in die Lösungssuche für Windows
+- Wegen Arbeit, leider keine weitere Zeit investiert in PM
+
+W8:
+
+- FR/SA/SO

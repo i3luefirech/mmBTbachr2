@@ -1,0 +1,17 @@
+Ziele
+
+1. Mehr als einen Cursor darstellen
+
+2. Original Cursor vom OS kontrollieren (original Maus hat keinen direkten Einfluss auf den Mauscursor des OS)
+
+3. Erfassen der realen RAW-Mauswerte
+
+4. Senden von Mausdaten vom Client -> Server
+
+5. Server kann Mausdaten vom Client empfangen
+
+6. Die jeweiligen Mausdaten kontrollieren den richtigen Mauscursor
+
+7. Actionen werden an den realen Mauscursor weitergegeben
+
+

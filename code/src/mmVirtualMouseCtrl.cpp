@@ -3,3 +3,5 @@
 //
 
 #include "../inc/mmVirtualMouseCtrl.h"
+
+mmVirtualMouseCtrl::mmVirtualMouseCtrl() {};

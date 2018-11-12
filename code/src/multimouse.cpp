@@ -4,17 +4,22 @@
 
 #include "../inc/multimouse.h"
 
-int main (int argc, char *argv[]) {
+multimouse::multimouse(){
 
     // create Server
-
+    this->server = new mmServer();
     // create Client
-
+    this->client = new mmClient();
     // create RealMouseCtrl
-
+    this->rmCtrl = new mmRealMouseCtrl();
     // create VirtualMouseCtrl
+    this->vmCtrl = new mmVirtualMouseCtrl();
+    // create CursorCtrl
+    this->cCtrl = new mmCursorCtrl();
 
-    // create CurserCtrl
-
+    // start Server
+    this->server->start();
+    // start Client
+    this->client->start();
 
 };

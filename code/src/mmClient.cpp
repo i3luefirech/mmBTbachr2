@@ -3,3 +3,9 @@
 //
 
 #include "../inc/mmClient.h"
+
+mmClient::mmClient() {};
+
+int mmClient::start() {
+    return 0;
+}

@@ -3,3 +3,9 @@
 //
 
 #include "../inc/mmServer.h"
+
+mmServer::mmServer() {};
+
+int mmServer::start() {
+    return 0;
+}

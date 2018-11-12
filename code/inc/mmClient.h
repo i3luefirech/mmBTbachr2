@@ -9,7 +9,8 @@ class mmClient {
 private:
     int placeholder;
 public:
-    mmClient(void);
+    mmClient();
+    int start();
 };
 
 #endif //CODE_MMCLIENT_H

@@ -3,3 +3,5 @@
 //
 
 #include "../inc/mmCursorCtrl.h"
+
+mmCursorCtrl::mmCursorCtrl() {};

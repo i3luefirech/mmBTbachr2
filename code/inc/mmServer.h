@@ -9,7 +9,8 @@ class mmServer {
 private:
     int placeholder;
 public:
-    mmServer(void);
+    mmServer();
+    int start();
 };
 
 #endif //CODE_MMSERVER_H

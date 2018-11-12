@@ -3,3 +3,5 @@
 //
 
 #include "../inc/mmRealMouseCtrl.h"
+
+mmRealMouseCtrl::mmRealMouseCtrl() {};

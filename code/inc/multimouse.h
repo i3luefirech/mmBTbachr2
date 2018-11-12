@@ -6,3 +6,4 @@
 #define CODE_MULTIMOUSE_H
 
 #endif //CODE_MULTIMOUSE_H
+

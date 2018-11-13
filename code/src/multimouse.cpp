@@ -7,6 +7,13 @@
 
 extern multimouse * mm;
 
+void *Thread2(void *pVoid) {
+
+    mm->startrealmouse(pVoid);
+
+    pthread_exit(nullptr);
+}
+
 void *Thread1(void *pVoid) {
 
     mm->startserver();
@@ -38,10 +45,18 @@ void multimouse::start(){
     // threads
     pthread_t thread0;
     pthread_t thread1;
+    pthread_t thread2;
+    pthread_t thread3;
+    int task0 = 0;
+    int task1 = 1;
     // start Client
     pthread_create( &thread0, nullptr, Thread0, (void *)nullptr );
     // start Server
     pthread_create( &thread1, nullptr, Thread1, (void *)nullptr );
+    // start Client
+    pthread_create( &thread2, nullptr, Thread2, (void *)&task0 );
+    // start Server
+    pthread_create( &thread3, nullptr, Thread2, (void *)&task1 );
 };
 
 void multimouse::startserver() {
@@ -50,4 +65,8 @@ void multimouse::startserver() {
 
 void multimouse::startclient() {
     mm->client->start();
+};
+
+void multimouse::startrealmouse(void *pVoid) {
+    mm->rmCtrl->start(pVoid);
 };

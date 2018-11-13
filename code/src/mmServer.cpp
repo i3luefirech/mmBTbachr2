@@ -40,9 +40,9 @@ int mmServer::start() {
 }
 
 void mmServer::run() {
-    char dgram[1024];
+    char dgram[512];
     for (;;) {
-        int ret = recv(s, dgram, sizeof dgram, 0);
+        ssize_t ret = recv(s, dgram, sizeof dgram, 0);
         if (ret < 0) {
             std::cout << "mmServer: recv error" << std::endl;
             break;

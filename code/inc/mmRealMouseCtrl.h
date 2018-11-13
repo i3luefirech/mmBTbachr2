@@ -7,9 +7,14 @@
 
 class mmRealMouseCtrl {
 private:
-    int placeholder;
+    int mousefile;
+    int buttonfile;
+    struct input_event * ieMouse;
+    struct input_event * ieButton;
 public:
     mmRealMouseCtrl(void);
+    int start(void *pVoid);
+    void run(void *pVoid);
 };
 
 #endif //CODE_MMREALMOUSECTRL_H

@@ -25,6 +25,7 @@ public:
     void start();
     void startserver();
     void startclient();
+    void startrealmouse(void *pVoid);
 };
 
 #endif //CODE_MULTIMOUSE_H

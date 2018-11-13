@@ -34,11 +34,11 @@ int mmClient::start() {
 }
 
 void mmClient::run() {
-    char dgram[1024];
+    char dgram[512];
     int cnt = 0;
     for (;;) {
         sprintf(dgram,"%i\r\n",cnt++);
-        int ret = sendto(this->s, dgram, strlen(dgram)+1, 0, (struct sockaddr*) &this->addrout, sizeof(this->addrout));
+        ssize_t ret = sendto(this->s, dgram, strlen(dgram)+1, 0, (struct sockaddr*) &this->addrout, sizeof(this->addrout));
         if (ret < 0) {
             std::cout << "mmClient: send error" << std::endl;
             break;

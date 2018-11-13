@@ -5,12 +5,16 @@
 #ifndef CODE_MMSERVER_H
 #define CODE_MMSERVER_H
 
+#include<arpa/inet.h>
+
 class mmServer {
 private:
-    int placeholder;
+    int s;
+    struct sockaddr_in addrin;
 public:
     mmServer();
     int start();
+    void run();
 };
 
 #endif //CODE_MMSERVER_H

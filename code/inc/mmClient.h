@@ -5,12 +5,16 @@
 #ifndef CODE_MMCLIENT_H
 #define CODE_MMCLIENT_H
 
+#include<arpa/inet.h>
+
 class mmClient {
 private:
-    int placeholder;
+    int s;
+    struct sockaddr_in addrout;
 public:
     mmClient();
     int start();
+    void run();
 };
 
 #endif //CODE_MMCLIENT_H

@@ -13,13 +13,18 @@
 
 class multimouse {
 private:
-    mmClient *client;
-    mmServer *server;
-    mmRealMouseCtrl *rmCtrl;
-    mmVirtualMouseCtrl *vmCtrl;
+    mmClient * client;
+    mmServer * server;
+    mmRealMouseCtrl * rmCtrl;
+    mmVirtualMouseCtrl * vmCtrl;
     mmCursorCtrl * cCtrl;
+    pthread_t serverthread;
+    pthread_t clientthread;
 public:
     multimouse();
+    void start();
+    void startserver();
+    void startclient();
 };
 
 #endif //CODE_MULTIMOUSE_H

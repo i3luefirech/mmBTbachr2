@@ -47,6 +47,7 @@ void multimouse::start(){
     pthread_t thread1;
     pthread_t thread2;
     pthread_t thread3;
+    // task switches
     int task0 = 0;
     int task1 = 1;
     // start Client

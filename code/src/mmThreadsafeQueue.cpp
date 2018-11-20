@@ -4,7 +4,7 @@
 
 #include <queue>
 #include <pthread.h>
-#include "mmThreadsafeQueue.h"
+#include "../inc/mmThreadsafeQueue.h"
 
 mmThreadsafeQueue::mmThreadsafeQueue() {
     pthread_mutex_init (&this->mtx, NULL);

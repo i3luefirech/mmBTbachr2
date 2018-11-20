@@ -54,10 +54,11 @@ void multimouse::start(){
     pthread_create( &thread0, nullptr, Thread0, (void *)nullptr );
     // start Server
     pthread_create( &thread1, nullptr, Thread1, (void *)nullptr );
-    // start Client
+    // start Realmouse Movement
     pthread_create( &thread2, nullptr, Thread2, (void *)&task0 );
-    // start Server
+    // start Realmouse Buttons
     pthread_create( &thread3, nullptr, Thread2, (void *)&task1 );
+    mm->cCtrl->start();
 };
 
 void multimouse::startserver() {

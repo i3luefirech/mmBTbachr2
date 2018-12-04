@@ -43,6 +43,7 @@ private:
 
     void describe_fbconfig(GLXFBConfig fbconfig);
     static int WaitForMapNotify(Display *d, XEvent *e, char *arg);
+    void allow_input_passthrough (Window w);
 };
 
 #endif //CODE_MMCURSOR_H

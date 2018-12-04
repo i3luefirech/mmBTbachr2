@@ -2,6 +2,10 @@
 // Created by root on 11/16/18.
 //
 
+#include <X11/Xlib.h>
+#include <X11/extensions/Xcomposite.h>
+#include <X11/extensions/Xfixes.h>
+#include <X11/extensions/shape.h>
 #include "../inc/mmCursor.h"
 
 int mmCursor::VisData[] = {
@@ -15,6 +19,16 @@ GLX_ALPHA_SIZE, 8,
 GLX_DEPTH_SIZE, 16,
 None
 };
+
+void mmCursor::allow_input_passthrough (Window w)
+{
+    XserverRegion region = XFixesCreateRegion (this->Xdisplay, NULL, 0);
+
+    XFixesSetWindowShapeRegion (this->Xdisplay, w, ShapeBounding, 0, 0, 0);
+    XFixesSetWindowShapeRegion (this->Xdisplay, w, ShapeInput, 0, 0, region);
+
+    XFixesDestroyRegion (this->Xdisplay, region);
+}
 
 mmCursor::mmCursor() {
 
@@ -60,14 +74,13 @@ mmCursor::mmCursor() {
     this->describe_fbconfig(fbconfig);
 
     /* Create a colormap - only needed on some X clients, eg. IRIX */
-    this->cmap = XCreateColormap(Xdisplay, Xroot, visual->visual, AllocNone);
+    this->cmap = XCreateColormap(this->Xdisplay, this->Xroot, visual->visual, AllocNone);
 
     attr.colormap = cmap;
     attr.background_pixmap = None;
     attr.border_pixmap = None;
-    attr.border_pixel = 0;
-    attr.event_mask =
-            StructureNotifyMask |
+    attr.border_pixel = 1;
+    attr.event_mask = StructureNotifyMask |
             EnterWindowMask |
             LeaveWindowMask |
             ExposureMask |
@@ -79,9 +92,11 @@ mmCursor::mmCursor() {
 
     attr_mask =
             //	CWBackPixmap|
+            CWOverrideRedirect |
             CWColormap |
             CWBorderPixel |
             CWEventMask;
+    attr.override_redirect = True;
 
     this->width = DisplayWidth(this->Xdisplay, DefaultScreen(this->Xdisplay)) / 2;
     this->height = DisplayHeight(this->Xdisplay, DefaultScreen(this->Xdisplay)) / 2;
@@ -95,6 +110,8 @@ mmCursor::mmCursor() {
                                         InputOutput,
                                         visual->visual,
                                         attr_mask, &attr);
+
+    this->allow_input_passthrough (this->window_handle);
 
     if (!this->window_handle) {
         printf("Couldn't create the window\r\n");

@@ -13,10 +13,9 @@
 
 // cat /proc/bus/input/devices
 // evtest /dev/input/eventX
-//#define MOUSEFILE "/dev/input/event6" for touchdevice virtual box
-#define MOUSEFILE "/dev/input/event19" // for ps/2 mouse virtual box
-#define MOUSEBUTTONFILE "/dev/input/event19" // both virtual box
-//#define KEYBOARD "/dev/input/event2" // both virtual box
+//#define MOUSEFILE "/dev/input/event6" for ext logitech
+#define MOUSEFILE "/dev/input/event6" // for ps/2 mouse virtual box
+#define MOUSEBUTTONFILE "/dev/input/event6" // both virtual box
 
 mmRealMouseCtrl::mmRealMouseCtrl() {
     this->mousefile = 0;

@@ -21,6 +21,7 @@ public:
     void rmCursor(mmCursor * newcursor);
 
     int start();
+    mmCursor *localmouse;
 };
 
 #endif //CODE_MMCURSORCTRL_H

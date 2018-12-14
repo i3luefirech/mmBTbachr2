@@ -1,86 +1,152 @@
 //
 // Created by root on 11/16/18.
 //
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 
-#include <X11/Xlib.h>
-#include <X11/extensions/Xcomposite.h>
-#include <X11/extensions/Xfixes.h>
+#include <GL/gl.h>
+#include <GL/glx.h>
+#include <GL/glxext.h>
+#include <X11/Xatom.h>
 #include <X11/extensions/shape.h>
+#include <X11/extensions/Xrender.h>
+#include <X11/extensions/Xfixes.h>
+#include <X11/extensions/Xcomposite.h>
+#include <X11/Xutil.h>
+
 #include "../inc/mmCursor.h"
 
-int mmCursor::VisData[] = {
-GLX_RENDER_TYPE, GLX_RGBA_BIT,
-GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-GLX_DOUBLEBUFFER, True,
-GLX_RED_SIZE, 8,
-GLX_GREEN_SIZE, 8,
-GLX_BLUE_SIZE, 8,
-GLX_ALPHA_SIZE, 8,
-GLX_DEPTH_SIZE, 16,
-None
+static int Xscreen;
+static Atom del_atom;
+static Colormap cmap;
+static Display *Xdisplay;
+static XVisualInfo *visual;
+static XRenderPictFormat *pict_format;
+static GLXFBConfig *fbconfigs, fbconfig;
+static int numfbconfigs;
+static GLXContext render_context;
+static Window Xroot, window_handle;
+static GLXWindow glX_window_handle;
+static int width, height;
+
+static int VisData[] = {
+        GLX_RENDER_TYPE, GLX_RGBA_BIT,
+        GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+        GLX_DOUBLEBUFFER, True,
+        GLX_RED_SIZE, 8,
+        GLX_GREEN_SIZE, 8,
+        GLX_BLUE_SIZE, 8,
+        GLX_ALPHA_SIZE, 8,
+        GLX_DEPTH_SIZE, 16,
+        None
 };
 
-void mmCursor::allow_input_passthrough (Window w)
+static int isExtensionSupported(const char *extList, const char *extension)
 {
-    XserverRegion region = XFixesCreateRegion (this->Xdisplay, NULL, 0);
 
-    XFixesSetWindowShapeRegion (this->Xdisplay, w, ShapeBounding, 0, 0, 0);
-    XFixesSetWindowShapeRegion (this->Xdisplay, w, ShapeInput, 0, 0, region);
+    const char *start;
+    const char *where, *terminator;
 
-    XFixesDestroyRegion (this->Xdisplay, region);
+    /* Extension names should not have spaces. */
+    where = strchr(extension, ' ');
+    if ( where || *extension == '\0' )
+        return 0;
+
+    /* It takes a bit of care to be fool-proof about parsing the
+       OpenGL extensions string. Don't be fooled by sub-strings,
+       etc. */
+    for ( start = extList; ; ) {
+        where = strstr( start, extension );
+
+        if ( !where )
+            break;
+
+        terminator = where + strlen( extension );
+
+        if ( where == start || *(where - 1) == ' ' )
+            if ( *terminator == ' ' || *terminator == '\0' )
+                return 1;
+
+        start = terminator;
+    }
+    return 0;
 }
 
-mmCursor::mmCursor() {
+static Bool WaitForMapNotify(Display *d, XEvent *e, char *arg)
+{
+    return d && e && arg && (e->type == MapNotify) && (e->xmap.window == *(Window*)arg);
+}
 
-    // create the window
+static void describe_fbconfig(GLXFBConfig fbconfig)
+{
+    int doublebuffer;
+    int red_bits, green_bits, blue_bits, alpha_bits, depth_bits;
 
+    glXGetFBConfigAttrib(Xdisplay, fbconfig, GLX_DOUBLEBUFFER, &doublebuffer);
+    glXGetFBConfigAttrib(Xdisplay, fbconfig, GLX_RED_SIZE, &red_bits);
+    glXGetFBConfigAttrib(Xdisplay, fbconfig, GLX_GREEN_SIZE, &green_bits);
+    glXGetFBConfigAttrib(Xdisplay, fbconfig, GLX_BLUE_SIZE, &blue_bits);
+    glXGetFBConfigAttrib(Xdisplay, fbconfig, GLX_ALPHA_SIZE, &alpha_bits);
+    glXGetFBConfigAttrib(Xdisplay, fbconfig, GLX_DEPTH_SIZE, &depth_bits);
+
+    fprintf(stderr, "FBConfig selected:\n"
+                    "Doublebuffer: %s\n"
+                    "Red Bits: %d, Green Bits: %d, Blue Bits: %d, Alpha Bits: %d, Depth Bits: %d\n",
+            doublebuffer == True ? "Yes" : "No",
+            red_bits, green_bits, blue_bits, alpha_bits, depth_bits);
+}
+
+static void createTheWindow()
+{
     XEvent event;
-    int x, y, attr_mask;
+    int x,y, attr_mask;
     XSizeHints hints;
     XWMHints *startup_state;
     XTextProperty textprop;
     XSetWindowAttributes attr = {0,};
+    static char *title = "FTB's little OpenGL example - ARGB extension by WXD";
 
-    this->Xdisplay = XOpenDisplay(NULL);
-    if (!this->Xdisplay) {
-        printf("Couldn't connect to X server\r\n");
-        return;
+    Xdisplay = XOpenDisplay(NULL);
+    if (!Xdisplay) {
+        printf("Couldn't connect to X server\n");
     }
-    this->Xscreen = DefaultScreen(this->Xdisplay);
-    this->Xroot = RootWindow(this->Xdisplay, this->Xscreen);
+    Xscreen = DefaultScreen(Xdisplay);
+    Xroot = RootWindow(Xdisplay, Xscreen);
 
-    this->fbconfigs = glXChooseFBConfig(this->Xdisplay, this->Xscreen, this->VisData, &this->numfbconfigs);
-    this->fbconfig = 0;
-    for (int i = 0; i < this->numfbconfigs; i++) {
-        this->visual = glXGetVisualFromFBConfig(this->Xdisplay, this->fbconfigs[i]);
-        if (!this->visual)
+    fbconfigs = glXChooseFBConfig(Xdisplay, Xscreen, VisData, &numfbconfigs);
+    fbconfig = 0;
+    for(int i = 0; i<numfbconfigs; i++) {
+        visual = (XVisualInfo*) glXGetVisualFromFBConfig(Xdisplay, fbconfigs[i]);
+        if(!visual)
             continue;
 
-        this->pict_format = XRenderFindVisualFormat(this->Xdisplay, this->visual->visual);
-        if (!this->pict_format)
+        pict_format = XRenderFindVisualFormat(Xdisplay, visual->visual);
+        if(!pict_format)
             continue;
 
-        this->fbconfig = this->fbconfigs[i];
-        if (this->pict_format->direct.alphaMask > 0) {
+        fbconfig = fbconfigs[i];
+        if(pict_format->direct.alphaMask > 0) {
             break;
         }
     }
 
-    if (!fbconfig) {
-        printf("No matching FB config found\r\n");
-        return;
+    if(!fbconfig) {
+        printf("No matching FB config found");
     }
 
-    this->describe_fbconfig(fbconfig);
+    describe_fbconfig(fbconfig);
 
     /* Create a colormap - only needed on some X clients, eg. IRIX */
-    this->cmap = XCreateColormap(this->Xdisplay, this->Xroot, visual->visual, AllocNone);
+    cmap = XCreateColormap(Xdisplay, Xroot, visual->visual, AllocNone);
 
     attr.colormap = cmap;
     attr.background_pixmap = None;
     attr.border_pixmap = None;
-    attr.border_pixel = 1;
-    attr.event_mask = StructureNotifyMask |
+    attr.border_pixel = 0;
+    attr.event_mask =
+            StructureNotifyMask |
             EnterWindowMask |
             LeaveWindowMask |
             ExposureMask |
@@ -91,149 +157,311 @@ mmCursor::mmCursor() {
             KeyReleaseMask;
 
     attr_mask =
-            //	CWBackPixmap|
+            CWBackPixmap|
+            CWColormap|
+            CWBorderPixel|
             CWOverrideRedirect |
-            CWColormap |
-            CWBorderPixel |
             CWEventMask;
-    attr.override_redirect = True;
 
-    this->width = DisplayWidth(this->Xdisplay, DefaultScreen(this->Xdisplay)) / 2;
-    this->height = DisplayHeight(this->Xdisplay, DefaultScreen(this->Xdisplay)) / 2;
-    x = this->width / 2, y = this->height / 2;
+    attr.override_redirect = true;
 
-    this->window_handle = XCreateWindow(Xdisplay,
-                                        Xroot,
-                                        x, y, this->width, this->height,
-                                        0,
-                                        visual->depth,
-                                        InputOutput,
-                                        visual->visual,
-                                        attr_mask, &attr);
+    width = DisplayWidth(Xdisplay, DefaultScreen(Xdisplay));
+    height = DisplayHeight(Xdisplay, DefaultScreen(Xdisplay));
+    x=0, y=0;
 
-    this->allow_input_passthrough (this->window_handle);
+    //window_handle = XCompositeGetOverlayWindow(Xdisplay,Xroot);
+    window_handle = XCreateWindow(  Xdisplay,
+                                    Xroot,
+                                    x, y, width, height,
+                                    0,
+                                    visual->depth,
+                                    InputOutput,
+                                    visual->visual,
+                                    attr_mask, &attr);
 
-    if (!this->window_handle) {
-        printf("Couldn't create the window\r\n");
-        return;
+    XserverRegion region = XFixesCreateRegion (Xdisplay, NULL, 0);
+
+    XFixesSetWindowShapeRegion (Xdisplay, window_handle, ShapeBounding, 0, 0, 0);
+    XFixesSetWindowShapeRegion (Xdisplay, window_handle, ShapeInput, 0, 0, region);
+
+    XFixesDestroyRegion (Xdisplay, region);
+
+    if( !window_handle ) {
+        printf("Couldn't create the window\n");
     }
 
-#if USE_GLX_CREATE_WINDOW
-    fputs("glXCreateWindow ", stderr);
+#ifdef USE_GLX_CREATE_WINDOW
     int glXattr[] = { None };
-    glX_window_handle = glXCreateWindow(Xdisplay, fbconfig, window_handle, glXattr);
-    if( !glX_window_handle ) {
-        fatalError("Couldn't create the GLX window\n");
-    }
+        glX_window_handle = glXCreateWindow(Xdisplay, fbconfig, window_handle, glXattr);
+        if( !glX_window_handle ) {
+        printf("Couldn't create the GLX window\n");
+        }
 #else
-    this->glX_window_handle = this->window_handle;
+    glX_window_handle = window_handle;
 #endif
 
-    textprop.value = (unsigned char *) "title";
+    textprop.value = (unsigned char*)title;
     textprop.encoding = XA_STRING;
     textprop.format = 8;
-    textprop.nitems = strlen("title");
+    textprop.nitems = strlen(title);
 
     hints.x = x;
     hints.y = y;
     hints.width = width;
     hints.height = height;
-    hints.flags = USPosition | USSize;
+    hints.flags = USPosition|USSize;
 
     startup_state = XAllocWMHints();
     startup_state->initial_state = NormalState;
     startup_state->flags = StateHint;
 
-    XSetWMProperties(this->Xdisplay, this->window_handle, &textprop, &textprop,
+    XSetWMProperties(Xdisplay, window_handle,&textprop, &textprop,
                      NULL, 0,
                      &hints,
                      startup_state,
                      NULL);
 
+
     XFree(startup_state);
 
-    XMapWindow(this->Xdisplay, this->window_handle);
-    XIfEvent(this->Xdisplay, &event, this->WaitForMapNotify, (char *) &this->window_handle);
+    XMapWindow(Xdisplay, window_handle);
+    XIfEvent(Xdisplay, &event, WaitForMapNotify, (char*)&window_handle);
 
-    if ((this->del_atom = XInternAtom(this->Xdisplay, "WM_DELETE_WINDOW", 0)) != None) {
-        XSetWMProtocols(this->Xdisplay, this->window_handle, &this->del_atom, 1);
+    if ((del_atom = XInternAtom(Xdisplay, "WM_DELETE_WINDOW", 0)) != None) {
+        XSetWMProtocols(Xdisplay, window_handle, &del_atom, 1);
     }
-
-    // create the render object
-
-    int dummy;
-    if (!glXQueryExtension(Xdisplay, &dummy, &dummy)) {
-        printf("OpenGL not supported by X server\r\n");
-        return;
-    }
-/*
-#if USE_GLX_CREATE_CONTEXT_ATTRIB
-        #define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
-	#define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092
-	render_context = NULL;
-	if( isExtensionSupported( glXQueryExtensionsString(Xdisplay, DefaultScreen(Xdisplay)), "GLX_ARB_create_context" ) ) {
-		typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
-		glXCreateContextAttribsARBProc glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
-		if( glXCreateContextAttribsARB ) {
-			int context_attribs[] =
-			{
-				GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-				GLX_CONTEXT_MINOR_VERSION_ARB, 0,
-				//GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-				None
-			};
-
-			int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(&ctxErrorHandler);
-
-			render_context = glXCreateContextAttribsARB( Xdisplay, fbconfig, 0, True, context_attribs );
-
-			XSync( Xdisplay, False );
-			XSetErrorHandler( oldHandler );
-
-			fputs("glXCreateContextAttribsARB failed", stderr);
-		} else {
-			fputs("glXCreateContextAttribsARB could not be retrieved", stderr);
-		}
-	} else {
-			fputs("glXCreateContextAttribsARB not supported", stderr);
-	}
-
-#else
-    if(!render_context)
-    {
-        {
-#endif
-            render_context = glXCreateNewContext(Xdisplay, fbconfig, GLX_RGBA_TYPE, 0, True);
-            if (!render_context) {
-                fatalError("Failed to create a GL context\n");
-            }
-        }
-
-        if (!glXMakeContextCurrent(Xdisplay, glX_window_handle, glX_window_handle, render_context)) {
-            fatalError("glXMakeCurrent failed for window\n");
-        }
-    }*/
-};
-
-Bool mmCursor::WaitForMapNotify(Display *d, XEvent *e, char *arg)
-{
-    return d && e && arg && (e->type == MapNotify) && (e->xmap.window == *(Window*)arg);
 }
 
-void mmCursor::describe_fbconfig(GLXFBConfig fbconfig)
+static int ctxErrorHandler( Display *dpy, XErrorEvent *ev )
 {
-    int doublebuffer;
-    int red_bits, green_bits, blue_bits, alpha_bits, depth_bits;
+    fputs("Error at context creation", stderr);
+    return 0;
+}
 
-    glXGetFBConfigAttrib(this->Xdisplay, fbconfig, GLX_DOUBLEBUFFER, &doublebuffer);
-    glXGetFBConfigAttrib(this->Xdisplay, fbconfig, GLX_RED_SIZE, &red_bits);
-    glXGetFBConfigAttrib(this->Xdisplay, fbconfig, GLX_GREEN_SIZE, &green_bits);
-    glXGetFBConfigAttrib(this->Xdisplay, fbconfig, GLX_BLUE_SIZE, &blue_bits);
-    glXGetFBConfigAttrib(this->Xdisplay, fbconfig, GLX_ALPHA_SIZE, &alpha_bits);
-    glXGetFBConfigAttrib(this->Xdisplay, fbconfig, GLX_DEPTH_SIZE, &depth_bits);
+static void createTheRenderContext()
+{
+    int dummy;
+    if (!glXQueryExtension(Xdisplay, &dummy, &dummy)) {
+        printf("OpenGL not supported by X server\n");
+    }
 
-    printf("FBConfig selected:\r\nDoublebuffer: %s\r\n"
-                    "Red Bits: %d, Green Bits: %d, Blue Bits: %d, Alpha Bits: %d, Depth Bits: %d\n",
-            doublebuffer == True ? "Yes" : "No",
-            red_bits, green_bits, blue_bits, alpha_bits, depth_bits);
+#ifdef USE_GLX_CREATE_CONTEXT_ATTRIB
+    #define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
+        #define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092
+        render_context = NULL;
+        if( isExtensionSupported( glXQueryExtensionsString(Xdisplay, DefaultScreen(Xdisplay)), "GLX_ARB_create_context" ) ) {
+        typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+        glXCreateContextAttribsARBProc glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
+        if( glXCreateContextAttribsARB ) {
+            int context_attribs[] =
+            {
+            GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+            GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+            //GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+            None
+            };
+
+            int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(&ctxErrorHandler);
+
+            render_context = glXCreateContextAttribsARB( Xdisplay, fbconfig, 0, True, context_attribs );
+
+            XSync( Xdisplay, False );
+            XSetErrorHandler( oldHandler );
+
+            fputs("glXCreateContextAttribsARB failed", stderr);
+        } else {
+            fputs("glXCreateContextAttribsARB could not be retrieved", stderr);
+        }
+        } else {
+            fputs("glXCreateContextAttribsARB not supported", stderr);
+        }
+
+        if(!render_context)
+        {
+#else
+    {
+#endif
+        render_context = glXCreateNewContext(Xdisplay, fbconfig, GLX_RGBA_TYPE, 0, True);
+        if (!render_context) {
+            printf("Failed to create a GL context\n");
+        }
+    }
+
+    if (!glXMakeContextCurrent(Xdisplay, glX_window_handle, glX_window_handle, render_context)) {
+        printf("glXMakeCurrent failed for window\n");
+    }
+}
+
+static int updateTheMessageQueue()
+{
+    XEvent event;
+    XConfigureEvent *xc;
+
+    while (XPending(Xdisplay))
+    {
+        XNextEvent(Xdisplay, &event);
+        switch (event.type)
+        {
+            case ClientMessage:
+                if (event.xclient.data.l[0] == del_atom)
+                {
+                    return 0;
+                }
+                break;
+
+            case ConfigureNotify:
+                xc = &(event.xconfigure);
+                width = xc->width;
+                height = xc->height;
+                break;
+        }
+    }
+    return 1;
+}
+
+/*  6----7
+   /|   /|
+  3----2 |
+  | 5--|-4
+  |/   |/
+  0----1
+
+*/
+
+GLfloat cube_vertices[][8] =  {
+        /*  X     Y     Z   Nx   Ny   Nz    S    T */
+        {-1.0, -1.0,  1.0, 0.0, 0.0, 1.0, 0.0, 0.0}, // 0
+        { 1.0, -1.0,  1.0, 0.0, 0.0, 1.0, 1.0, 0.0}, // 1
+        { 1.0,  1.0,  1.0, 0.0, 0.0, 1.0, 1.0, 1.0}, // 2
+        {-1.0,  1.0,  1.0, 0.0, 0.0, 1.0, 0.0, 1.0}, // 3
+
+        { 1.0, -1.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0}, // 4
+        {-1.0, -1.0, -1.0, 0.0, 0.0, -1.0, 1.0, 0.0}, // 5
+        {-1.0,  1.0, -1.0, 0.0, 0.0, -1.0, 1.0, 1.0}, // 6
+        { 1.0,  1.0, -1.0, 0.0, 0.0, -1.0, 0.0, 1.0}, // 7
+
+        {-1.0, -1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0}, // 5
+        {-1.0, -1.0,  1.0, -1.0, 0.0, 0.0, 1.0, 0.0}, // 0
+        {-1.0,  1.0,  1.0, -1.0, 0.0, 0.0, 1.0, 1.0}, // 3
+        {-1.0,  1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 1.0}, // 6
+
+        { 1.0, -1.0,  1.0,  1.0, 0.0, 0.0, 0.0, 0.0}, // 1
+        { 1.0, -1.0, -1.0,  1.0, 0.0, 0.0, 1.0, 0.0}, // 4
+        { 1.0,  1.0, -1.0,  1.0, 0.0, 0.0, 1.0, 1.0}, // 7
+        { 1.0,  1.0,  1.0,  1.0, 0.0, 0.0, 0.0, 1.0}, // 2
+
+        {-1.0, -1.0, -1.0,  0.0, -1.0, 0.0, 0.0, 0.0}, // 5
+        { 1.0, -1.0, -1.0,  0.0, -1.0, 0.0, 1.0, 0.0}, // 4
+        { 1.0, -1.0,  1.0,  0.0, -1.0, 0.0, 1.0, 1.0}, // 1
+        {-1.0, -1.0,  1.0,  0.0, -1.0, 0.0, 0.0, 1.0}, // 0
+
+        {-1.0, 1.0,  1.0,  0.0,  1.0, 0.0, 0.0, 0.0}, // 3
+        { 1.0, 1.0,  1.0,  0.0,  1.0, 0.0, 1.0, 0.0}, // 2
+        { 1.0, 1.0, -1.0,  0.0,  1.0, 0.0, 1.0, 1.0}, // 7
+        {-1.0, 1.0, -1.0,  0.0,  1.0, 0.0, 0.0, 1.0}, // 6
+};
+
+GLfloat vertices_position[6] = {
+
+        1.0, 1.0,
+        -1.0, 1.0,
+        -1.0, 0.0
+};
+
+static void draw_cube(void)
+{
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glVertexPointer(3, GL_FLOAT, sizeof(GLfloat) * 8, &cube_vertices[0][0]);
+    glNormalPointer(GL_FLOAT, sizeof(GLfloat) * 8, &cube_vertices[0][3]);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(GLfloat) * 8, &cube_vertices[0][6]);
+
+    glDrawArrays(GL_QUADS, 0, 24);
+}
+
+float const light0_dir[]={0,1,0,0};
+float const light0_color[]={78./255., 80./255., 184./255.,1};
+
+float const light1_dir[]={-1,1,1,0};
+float const light1_color[]={255./255., 220./255., 97./255.,1};
+
+float const light2_dir[]={0,-1,0,0};
+float const light2_color[]={31./255., 75./255., 16./255.,1};
+
+static void redrawTheWindow()
+{
+    float const aspect = (float)width / (float)height;
+
+    static float a=0;
+    static float b=0;
+    static float c=0;
+
+    glDrawBuffer(GL_BACK);
+
+    glViewport(0, 0, width, height);
+
+    // Clear with alpha = 0.0, i.e. full transparency
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-aspect, aspect, -1, 1, 2.5, 10);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glLightfv(GL_LIGHT0, GL_POSITION, light0_dir);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_color);
+
+    glLightfv(GL_LIGHT1, GL_POSITION, light1_dir);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_color);
+
+    glLightfv(GL_LIGHT2, GL_POSITION, light2_dir);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, light2_color);
+
+    glTranslatef(0., 0., -5.);
+
+    glRotatef(a, 1, 0, 0);
+    glRotatef(b, 0, 1, 0);
+    glRotatef(c, 0, 0, 1);
+
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHTING);
+
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+
+    glColor4f(1., 1., 1., 0.5);
+
+    glCullFace(GL_FRONT);
+    draw_cube();
+    glCullFace(GL_BACK);
+    draw_cube();
+
+    a = fmod(a+0.1, 360.);
+    b = fmod(b+0.5, 360.);
+    c = fmod(c+0.25, 360.);
+
+    glXSwapBuffers(Xdisplay, glX_window_handle);
+}
+
+mmCursor::mmCursor() {
+};
+
+void mmCursor::run() {
+    createTheWindow();
+    createTheRenderContext();
+    while (updateTheMessageQueue()) {
+        redrawTheWindow();
+    }
 }

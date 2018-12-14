@@ -20,30 +20,8 @@
 
 class mmCursor {
 public:
-
+    void run();
     mmCursor();
-
-private:
-
-    Display *Xdisplay;
-    int Xscreen;
-    Window Xroot;
-    GLXFBConfig *fbconfigs;
-    GLXFBConfig fbconfig;
-    int numfbconfigs;
-    XVisualInfo *visual;
-    XRenderPictFormat *pict_format;
-    Colormap cmap;
-    int width;
-    int height;
-    Window window_handle;
-    Window glX_window_handle;
-    Atom del_atom;
-    static int VisData[];
-
-    void describe_fbconfig(GLXFBConfig fbconfig);
-    static int WaitForMapNotify(Display *d, XEvent *e, char *arg);
-    void allow_input_passthrough (Window w);
 };
 
 #endif //CODE_MMCURSOR_H

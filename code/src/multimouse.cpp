@@ -6,6 +6,7 @@
 #include "../inc/multimouse.h"
 
 extern multimouse * mm;
+mmCursorCtrl * cc;
 
 void *Thread2(void *pVoid) {
 
@@ -39,6 +40,7 @@ multimouse::multimouse(){
     this->vmCtrl = new mmVirtualMouseCtrl();
     // create CursorCtrl
     this->cCtrl = new mmCursorCtrl();
+    cc = this->cCtrl;
 }
 
 void multimouse::start(){

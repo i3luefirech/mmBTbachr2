@@ -6,6 +6,7 @@
 #include <string.h>
 #include <math.h>
 
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
 #include <GL/glxext.h>
@@ -165,8 +166,8 @@ static void createTheWindow()
 
     attr.override_redirect = true;
 
-    width = DisplayWidth(Xdisplay, DefaultScreen(Xdisplay));
-    height = DisplayHeight(Xdisplay, DefaultScreen(Xdisplay));
+    width = 20;//DisplayWidth(Xdisplay, DefaultScreen(Xdisplay));
+    height = 20;//DisplayHeight(Xdisplay, DefaultScreen(Xdisplay));
     x=0, y=0;
 
     //window_handle = XCompositeGetOverlayWindow(Xdisplay,Xroot);
@@ -240,6 +241,7 @@ static int ctxErrorHandler( Display *dpy, XErrorEvent *ev )
 
 static void createTheRenderContext()
 {
+#if 1
     int dummy;
     if (!glXQueryExtension(Xdisplay, &dummy, &dummy)) {
         printf("OpenGL not supported by X server\n");
@@ -290,6 +292,14 @@ static void createTheRenderContext()
     if (!glXMakeContextCurrent(Xdisplay, glX_window_handle, glX_window_handle, render_context)) {
         printf("glXMakeCurrent failed for window\n");
     }
+#else
+    glewExperimental=true; // Needed in core profile
+    if (int ret = glewInit() != GLEW_OK) {
+        fprintf(stderr, "Failed to initialize GLEW %s\n",glewGetErrorString(ret));
+        return;
+    }
+#endif
+
 }
 
 static int updateTheMessageQueue()
@@ -319,138 +329,23 @@ static int updateTheMessageQueue()
     return 1;
 }
 
-/*  6----7
-   /|   /|
-  3----2 |
-  | 5--|-4
-  |/   |/
-  0----1
+static void redrawTheWindow() {
+    //
+    XWindowAttributes winattr;
 
-*/
+    XGetWindowAttributes(Xdisplay, glX_window_handle, &winattr);
+    glViewport(0, 0, winattr.width, winattr.height);
 
-GLfloat cube_vertices[][8] =  {
-        /*  X     Y     Z   Nx   Ny   Nz    S    T */
-        {-1.0, -1.0,  1.0, 0.0, 0.0, 1.0, 0.0, 0.0}, // 0
-        { 1.0, -1.0,  1.0, 0.0, 0.0, 1.0, 1.0, 0.0}, // 1
-        { 1.0,  1.0,  1.0, 0.0, 0.0, 1.0, 1.0, 1.0}, // 2
-        {-1.0,  1.0,  1.0, 0.0, 0.0, 1.0, 0.0, 1.0}, // 3
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glColor3f(0.0f, 0.0f, 1.0f);
 
-        { 1.0, -1.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0}, // 4
-        {-1.0, -1.0, -1.0, 0.0, 0.0, -1.0, 1.0, 0.0}, // 5
-        {-1.0,  1.0, -1.0, 0.0, 0.0, -1.0, 1.0, 1.0}, // 6
-        { 1.0,  1.0, -1.0, 0.0, 0.0, -1.0, 0.0, 1.0}, // 7
+    glBegin(GL_TRIANGLES);
+    glVertex3f(-1.0f,-1.0f,0.0f);
+    glVertex3f(1.0f,1.0f,0.0f);
+    glVertex3f(-1.0f,1.0f,0.0f);
 
-        {-1.0, -1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0}, // 5
-        {-1.0, -1.0,  1.0, -1.0, 0.0, 0.0, 1.0, 0.0}, // 0
-        {-1.0,  1.0,  1.0, -1.0, 0.0, 0.0, 1.0, 1.0}, // 3
-        {-1.0,  1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 1.0}, // 6
-
-        { 1.0, -1.0,  1.0,  1.0, 0.0, 0.0, 0.0, 0.0}, // 1
-        { 1.0, -1.0, -1.0,  1.0, 0.0, 0.0, 1.0, 0.0}, // 4
-        { 1.0,  1.0, -1.0,  1.0, 0.0, 0.0, 1.0, 1.0}, // 7
-        { 1.0,  1.0,  1.0,  1.0, 0.0, 0.0, 0.0, 1.0}, // 2
-
-        {-1.0, -1.0, -1.0,  0.0, -1.0, 0.0, 0.0, 0.0}, // 5
-        { 1.0, -1.0, -1.0,  0.0, -1.0, 0.0, 1.0, 0.0}, // 4
-        { 1.0, -1.0,  1.0,  0.0, -1.0, 0.0, 1.0, 1.0}, // 1
-        {-1.0, -1.0,  1.0,  0.0, -1.0, 0.0, 0.0, 1.0}, // 0
-
-        {-1.0, 1.0,  1.0,  0.0,  1.0, 0.0, 0.0, 0.0}, // 3
-        { 1.0, 1.0,  1.0,  0.0,  1.0, 0.0, 1.0, 0.0}, // 2
-        { 1.0, 1.0, -1.0,  0.0,  1.0, 0.0, 1.0, 1.0}, // 7
-        {-1.0, 1.0, -1.0,  0.0,  1.0, 0.0, 0.0, 1.0}, // 6
-};
-
-GLfloat vertices_position[6] = {
-
-        1.0, 1.0,
-        -1.0, 1.0,
-        -1.0, 0.0
-};
-
-static void draw_cube(void)
-{
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    glVertexPointer(3, GL_FLOAT, sizeof(GLfloat) * 8, &cube_vertices[0][0]);
-    glNormalPointer(GL_FLOAT, sizeof(GLfloat) * 8, &cube_vertices[0][3]);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(GLfloat) * 8, &cube_vertices[0][6]);
-
-    glDrawArrays(GL_QUADS, 0, 24);
-}
-
-float const light0_dir[]={0,1,0,0};
-float const light0_color[]={78./255., 80./255., 184./255.,1};
-
-float const light1_dir[]={-1,1,1,0};
-float const light1_color[]={255./255., 220./255., 97./255.,1};
-
-float const light2_dir[]={0,-1,0,0};
-float const light2_color[]={31./255., 75./255., 16./255.,1};
-
-static void redrawTheWindow()
-{
-    float const aspect = (float)width / (float)height;
-
-    static float a=0;
-    static float b=0;
-    static float c=0;
-
-    glDrawBuffer(GL_BACK);
-
-    glViewport(0, 0, width, height);
-
-    // Clear with alpha = 0.0, i.e. full transparency
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(-aspect, aspect, -1, 1, 2.5, 10);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glLightfv(GL_LIGHT0, GL_POSITION, light0_dir);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_color);
-
-    glLightfv(GL_LIGHT1, GL_POSITION, light1_dir);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_color);
-
-    glLightfv(GL_LIGHT2, GL_POSITION, light2_dir);
-    glLightfv(GL_LIGHT2, GL_DIFFUSE, light2_color);
-
-    glTranslatef(0., 0., -5.);
-
-    glRotatef(a, 1, 0, 0);
-    glRotatef(b, 0, 1, 0);
-    glRotatef(c, 0, 0, 1);
-
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
-    glEnable(GL_LIGHTING);
-
-    glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-
-    glColor4f(1., 1., 1., 0.5);
-
-    glCullFace(GL_FRONT);
-    draw_cube();
-    glCullFace(GL_BACK);
-    draw_cube();
-
-    a = fmod(a+0.1, 360.);
-    b = fmod(b+0.5, 360.);
-    c = fmod(c+0.25, 360.);
+    glEnd();
 
     glXSwapBuffers(Xdisplay, glX_window_handle);
 }

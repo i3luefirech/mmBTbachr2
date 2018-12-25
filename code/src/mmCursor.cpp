@@ -327,7 +327,11 @@ static int updateTheMessageQueue()
         }
     }
     return 1;
-}
+};
+
+int xpos = 0;
+int ypos = 0;
+int count = 0;
 
 static void redrawTheWindow() {
     //
@@ -348,6 +352,12 @@ static void redrawTheWindow() {
     glEnd();
 
     glXSwapBuffers(Xdisplay, glX_window_handle);
+
+    if(count++%50){
+        xpos++;
+        ypos++;
+        XMoveWindow(Xdisplay, glX_window_handle, xpos, ypos);
+    }
 }
 
 mmCursor::mmCursor() {

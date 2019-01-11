@@ -11,27 +11,22 @@
 #include "../inc/mmClient.h"
 
 mmClient::mmClient() {
-    this->s = socket(AF_INET,SOCK_DGRAM,0);
+    this->s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    std::cout << "mmClient: socket = " << this->s << std::endl;
     this->addrout.sin_family = AF_INET;
-    this->addrout.sin_port = htons(12322);
+    this->addrout.sin_port = htons(60606);
     this->addrout.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-};
-
-int mmClient::start() {
     int ret = 0;
     int trueflag = 1;
     if ( this->s == -1 ) {
         std::cout << "mmClient: socketinit error" << std::endl;
-        return -1;
+        return;
     }
 
     if ((ret = setsockopt( this->s, SOL_SOCKET, SO_BROADCAST, &trueflag, sizeof(trueflag))) < 0) {
         std::cout << "mmClient: setsockopt " << ret << std::endl;
     }
-
-    this->run();
-    return ret;
-}
+};
 
 void mmClient::run() {
     char dgram[512];

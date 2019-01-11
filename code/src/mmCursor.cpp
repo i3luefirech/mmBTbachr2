@@ -329,11 +329,7 @@ static int updateTheMessageQueue()
     return 1;
 };
 
-int xpos = 0;
-int ypos = 0;
-int count = 0;
-
-static void redrawTheWindow() {
+void mmCursor::redrawTheWindow() {
     //
     XWindowAttributes winattr;
 
@@ -353,14 +349,23 @@ static void redrawTheWindow() {
 
     glXSwapBuffers(Xdisplay, glX_window_handle);
 
-    if(count++%50){
-        xpos++;
-        ypos++;
-        XMoveWindow(Xdisplay, glX_window_handle, xpos, ypos);
+    if(this->cnt++%50){
+        this->posx++;
+        this->posy++;
+        XMoveWindow(Xdisplay, glX_window_handle, this->posx, this->posy);
     }
 }
 
 mmCursor::mmCursor() {
+    this->posx = 0;
+    this->posy = 0;
+    this->cnt = 0;
+};
+
+mmCursor::mmCursor(int x, int y) {
+    this->posx = x;
+    this->posy = y;
+    this->cnt = 0;
 };
 
 void mmCursor::run() {

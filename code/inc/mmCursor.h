@@ -19,9 +19,15 @@
 #include <X11/Xutil.h>
 
 class mmCursor {
+private:
+    int posx;
+    int posy;
+    int cnt;
 public:
     void run();
     mmCursor();
+    mmCursor(int x, int y);
+    void redrawTheWindow();
 };
 
 #endif //CODE_MMCURSOR_H

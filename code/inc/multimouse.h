@@ -10,6 +10,7 @@
 #include "mmRealMouseCtrl.h"
 #include "mmVirtualMouseCtrl.h"
 #include "mmCursorCtrl.h"
+#include "RealMouse.h"
 
 class multimouse {
 private:
@@ -26,6 +27,8 @@ public:
     void startserver();
     void startclient();
     void startrealmouse(void *pVoid);
+
+    multimouse(RealMouse *localmice, mmCursor *localcursors, mmCursor *remotecursors);
 };
 
 #endif //CODE_MULTIMOUSE_H

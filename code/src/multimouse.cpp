@@ -56,9 +56,9 @@ void multimouse::start(){
     pthread_create( &thread0, nullptr, Thread0, (void *)nullptr );
     // start Server
     pthread_create( &thread1, nullptr, Thread1, (void *)nullptr );
-    /*// start Realmouse Movement
+    // start Realmouse Movement
     pthread_create( &thread2, nullptr, Thread2, (void *)&task0 );
-    // start Realmouse Buttons
+    /*// start Realmouse Buttons
     pthread_create( &thread3, nullptr, Thread2, (void *)&task1 );
     //mm->cCtrl->start();*/
 };
@@ -76,5 +76,16 @@ void multimouse::startrealmouse(void *pVoid) {
 }
 
 multimouse::multimouse(RealMouse *localmice, mmCursor *localcursors, mmCursor *remotecursors) {
-    multimouse();
+
+    // create Client
+    this->client = new mmClient();
+    // create Server
+    this->server = new mmServer();
+    // create RealMouseCtrl
+    this->rmCtrl = new mmRealMouseCtrl(localmice);
+    // create VirtualMouseCtrl
+    this->vmCtrl = new mmVirtualMouseCtrl();
+    // create CursorCtrl
+//    this->cCtrl = new mmCursorCtrl(localcursors, remotecursors);
+  //  cc = this->cCtrl;
 };

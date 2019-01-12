@@ -4,10 +4,20 @@
 
 #include "../inc/multimouse.h"
 #include "../inc/configparser.h"
+#include "../inc/mrmCfgParser.h"
+#include "../inc/mrmMouse.h"
+#include "../inc/mrmCursor.h"
+#include "../inc/mrmScreen.h"
+#include "../inc/mrmOSCursor.h"
+#include "../inc/mrmMultiRemoteMouse.h"
+#include "../inc/mrmUDPServer.h"
 
+using namespace std;
+
+mrmMultiRemoteMouse * mrm = nullptr;
 multimouse * mm = nullptr;
 
-std::string cfgfilename = "../cfg/config.json";
+string cfgfilename = "../cfg/config.json";
 
 int main(int argc, char** argv) {
     // read arg
@@ -19,33 +29,41 @@ int main(int argc, char** argv) {
         }
     }
     // create parser
-    std::ifstream input_stream(cfgfilename);
-    std::stringstream buffer;
+    ifstream input_stream(cfgfilename);
+    stringstream buffer;
     buffer << input_stream.rdbuf();
-    std::string jsonstr = buffer.str();
-    configparser * myparser = new configparser(jsonstr);
+    string jsonstr = buffer.str();
+    mrmCfgParser * myparser = new mrmCfgParser(jsonstr);
     // parse config
     myparser->parse();
-    // create mouses and cursor from config
-    RealMouse * localmice;
-    mmCursor * localcursors;
-    mmCursor * remotecursors;
-    int amount_ml = myparser->createLocalMice(localmice);
-    int amount_cl = myparser->createLocalCursor(localcursors);
-    int amount_cr = myparser->createRemoteCursor(remotecursors);
-    // create multimouse
-    mm = new multimouse(localmice,localcursors,remotecursors);
+    // create objects
+    list<mrmMouse> localmice;
+    list<mrmCursor> localcursors;
+    list<mrmCursor> remotecursors;
+    list<mrmScreen> remotescreens;
+    mrmUDPClient * udpclient;
+    mrmUDPServer * udpserver;
 
-    std::cout << "Start!" << std::endl;
+    int amountlm = 0;
+    int amountlc = 0;
+    int amountrc = 0;
+    int amountrs = 0;
+    localmice = myparser->createLocalMice(&amountlm);
+    localcursors = myparser->createLocalCursors(&amountlc);
+    remotecursors = myparser->createRemoteCursors(&amountrc);
+    remotescreens = myparser->createScreens(&amountrs);
+    cout << "amount: " << amountlm << ", " << amountlc << ", " << amountrc << ", " << amountrs << endl;
+    int port = myparser->getUDPPort();
+    udpclient = new mrmUDPClient(port);
+    udpserver = new mrmUDPServer(port);
 
-    sleep(1);
+    mrm = new mrmMultiRemoteMouse(localmice, amountlm, localcursors, amountlc, remotecursors, amountrc, remotescreens, amountrs, udpclient, udpserver);
 
-    mm->start();
+    mrm->start();
 
-    while(1);
+    udpclient->sendtest();
 
-    std::cout << "Bye!" << std::endl;
-    free(mm);
+    while(1){sleep(1);};
 
     return 0;
 }

@@ -22,6 +22,8 @@ public:
 
     int start();
     mmCursor *localmouse;
+
+    mmCursorCtrl(mmCursor *localcursors, mmCursor *remotecursors);
 };
 
 #endif //CODE_MMCURSORCTRL_H

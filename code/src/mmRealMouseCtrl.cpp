@@ -58,3 +58,7 @@ void mmRealMouseCtrl::run(void *pVoid) {
             break;
     }
 }
+
+mmRealMouseCtrl::mmRealMouseCtrl(RealMouse *localmice) {
+
+}

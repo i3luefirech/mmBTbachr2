@@ -10,6 +10,6 @@ include_directories( ${OPENGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
 IF(UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 ENDIF()
-add_executable(code src/main.cpp src/mmClient.cpp inc/mmClient.h src/mmCursorCtrl.cpp inc/mmCursorCtrl.h src/mmRealMouseCtrl.cpp inc/mmRealMouseCtrl.h src/mmServer.cpp inc/mmServer.h src/mmVirtualMouseCtrl.cpp inc/mmVirtualMouseCtrl.h src/multimouse.cpp inc/multimouse.h src/mmThreadsafeQueue.cpp inc/mmThreadsafeQueue.h src/mmCursor.cpp inc/mmCursor.h src/shader.cpp inc/shader.hpp src/configparser.cpp inc/configparser.h src/RealMouse.cpp inc/RealMouse.h)
+add_executable(code src/main.cpp src/mmClient.cpp inc/mmClient.h src/mmRealMouseCtrl.cpp inc/mmRealMouseCtrl.h src/mmServer.cpp inc/mmServer.h src/mmVirtualMouseCtrl.cpp inc/mmVirtualMouseCtrl.h src/multimouse.cpp inc/multimouse.h src/mmThreadsafeQueue.cpp inc/mmThreadsafeQueue.h src/mmCursor.cpp inc/mmCursor.h src/shader.cpp inc/shader.hpp src/configparser.cpp inc/configparser.h src/RealMouse.cpp inc/RealMouse.h src/mrmCfgParser.cpp inc/mrmCfgParser.h src/mrmMouse.cpp inc/mrmMouse.h src/mrmCursor.cpp inc/mrmCursor.h src/mrmScreen.cpp inc/mrmScreen.h src/mrmOSCursor.cpp inc/mrmOSCursor.h src/mrmMultiRemoteMouse.cpp inc/mrmMultiRemoteMouse.h src/mrmUDPClient.cpp inc/mrmUDPClient.h src/mrmUDPServer.cpp inc/mrmUDPServer.h src/mrmMiceControl.cpp inc/mrmMiceControl.h src/mrmCursorControl.cpp inc/mrmCursorControl.h)
 
 target_link_libraries(code ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} X11 Xrender Xcomposite Xfixes nlohmann_json::nlohmann_json)

@@ -33,3 +33,7 @@ int mmCursorCtrl::start() {
     pthread_create( &threadCC0, nullptr, ThreadCC0, (void *)nullptr );
     return 0;
 }
+
+mmCursorCtrl::mmCursorCtrl(mmCursor *localcursors, mmCursor *remotecursors) {
+
+}

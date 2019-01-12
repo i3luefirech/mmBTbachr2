@@ -23,6 +23,7 @@ public:
     int posx;
     int posy;
     Display *dpy;
+    pthread_mutex_t mutex;
 };
 
 

@@ -19,11 +19,11 @@ void mrmOSCursor::setCursor(int posx, int posy) {
 }
 
 void mrmOSCursor::releaseMutex() {
-
+    pthread_mutex_unlock(&this->mutex);
 }
 
 void mrmOSCursor::getMutex() {
-
+    pthread_mutex_lock(&this->mutex);
 }
 
 void mrmOSCursor::clickPress(int key) {
@@ -86,7 +86,10 @@ void mrmOSCursor::clickRelease(int key) {
 }
 
 mrmOSCursor::mrmOSCursor() {
+    pthread_mutex_init(&this->mutex, NULL);
+
     this->dpy = XOpenDisplay(0);
+
     Window root = DefaultRootWindow(this->dpy);
 
     XFlush(this->dpy);

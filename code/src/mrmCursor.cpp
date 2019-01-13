@@ -168,7 +168,8 @@ void mrmCursor::createTheWindow()
             ButtonReleaseMask |
             OwnerGrabButtonMask |
             KeyPressMask |
-            KeyReleaseMask;
+            KeyReleaseMask |
+            FocusChangeMask;
 
     attr_mask =
             CWBackPixmap|
@@ -183,7 +184,7 @@ void mrmCursor::createTheWindow()
     this->height = 20;//DisplayHeight(Xdisplay, DefaultScreen(Xdisplay));
     x=0, y=0;
 
-    //this->window_handle = XCompositeGetOverlayWindow(Xdisplay,Xroot);
+    this->window_handle = XCompositeGetOverlayWindow(this->Xdisplay,this->Xroot);
     this->window_handle = XCreateWindow(  this->Xdisplay,
                                           this->Xroot,
                                     x, y, this->width, this->height,
@@ -290,6 +291,12 @@ int mrmCursor::updateTheMessageQueue()
                 xc = &(event.xconfigure);
                 this->width = xc->width;
                 this->height = xc->height;
+                break;
+            case FocusIn:
+                cout << "focus" << endl;
+                break;
+            case FocusOut:
+                cout << "blur" << endl;
                 break;
         }
     }

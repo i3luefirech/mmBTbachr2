@@ -7,6 +7,7 @@
 
 #include <X11/Xatom.h>
 #include <X11/extensions/Xrender.h>
+#include <X11/extensions/XTest.h>
 #include <X11/Xutil.h>
 
 class mrmOSCursor {

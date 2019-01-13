@@ -118,7 +118,6 @@ int mrmCursorControl::work_event(json work_event) {
                 }
                 if(it->clickrunning==Button1 || it->clickrunning==Button2 || it->clickrunning==Button3 || it->clickrunning==Button4 || it->clickrunning==Button5){
                     this->oscursor->setCursor(it->getPosx(), it->getPosy());
-                    this->oscursor->sendMotionNotify(it->clickrunning);
                 }
             } else if(EV_ABS==(int)work_event["type"]) {
                 if(ABS_X==(int)work_event["code"]){
@@ -154,7 +153,7 @@ int mrmCursorControl::work_event(json work_event) {
                     }
                     it->setPosy(newpos);
                 }
-                if(it->clickrunning==1){
+                if(it->clickrunning==Button1 || it->clickrunning==Button2 || it->clickrunning==Button3 || it->clickrunning==Button4 || it->clickrunning==Button5){
                     this->oscursor->setCursor(it->getPosx(), it->getPosy());
                 }
             }

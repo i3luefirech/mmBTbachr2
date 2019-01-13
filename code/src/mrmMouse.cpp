@@ -52,6 +52,7 @@ void mrmMouse::run(mrmMouse* mouse) {
             eventobj["time_s"] = mouseevent.time.tv_sec;
             eventobj["time_us"] = mouseevent.time.tv_usec;
             mrm->recvMouseEvent(eventobj);
+            usleep(50);
         } else {
             usleep(500);
         }

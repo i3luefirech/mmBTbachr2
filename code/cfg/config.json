@@ -1,13 +1,23 @@
 {
   "localmice" : [
     {
-      "eventfile" : "/dev/input/event7",
+      "eventfile" : "/dev/input/event6",
       "id" : "testmouse1",
       "color_r" : 100,
       "color_g" : 100,
       "color_b" : 100,
       "devicenumbers" : [
         10,11,0,0,0
+      ]
+    },
+    {
+      "eventfile" : "/dev/input/event8",
+      "id" : "testmouse2",
+      "color_r" : 80,
+      "color_g" : 120,
+      "color_b" : 80,
+      "devicenumbers" : [
+        15,0,0,0,0
       ]
     }
   ],

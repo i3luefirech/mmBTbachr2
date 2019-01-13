@@ -27,7 +27,22 @@ void mrmOSCursor::getMutex() {
 }
 
 void mrmOSCursor::clickPress(int key) {
-    this->dpy = XOpenDisplay(NULL);
+
+    if(!(this->dpy = XOpenDisplay(NULL))) {
+        fprintf(stderr, "Cannot open display \"%s\".\n", XDisplayName(NULL));
+        exit(EXIT_FAILURE);
+    }
+
+    int ignore;
+    if(!(XQueryExtension(this->dpy, "XTEST", &ignore, &ignore, &ignore))) {
+        fprintf(stderr, "You do not have the \"XTEST\" extension enabled on your current display.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    XTestFakeButtonEvent(this->dpy, key, True, 0);
+
+    XCloseDisplay(this->dpy);
+    /*this->dpy = XOpenDisplay(NULL);
 
     XEvent event;
 
@@ -35,6 +50,7 @@ void mrmOSCursor::clickPress(int key) {
 
     event.type = ButtonPress;
     event.xbutton.button = key;
+    event.xbutton.state = 0x100;
     event.xbutton.same_screen = True;
 
     XQueryPointer(this->dpy, RootWindow(this->dpy, DefaultScreen(this->dpy)), &event.xbutton.root, &event.xbutton.window, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
@@ -52,12 +68,28 @@ void mrmOSCursor::clickPress(int key) {
 
     XFlush(this->dpy);
 
-    XCloseDisplay(this->dpy);
+    XCloseDisplay(this->dpy);*/
 }
 
 void mrmOSCursor::clickRelease(int key) {
 
-    this->dpy = XOpenDisplay(NULL);
+
+    if(!(this->dpy = XOpenDisplay(NULL))) {
+        fprintf(stderr, "Cannot open display \"%s\".\n", XDisplayName(NULL));
+        exit(EXIT_FAILURE);
+    }
+
+    int ignore;
+    if(!(XQueryExtension(this->dpy, "XTEST", &ignore, &ignore, &ignore))) {
+        fprintf(stderr, "You do not have the \"XTEST\" extension enabled on your current display.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    XTestFakeButtonEvent(this->dpy, key, False, 0);
+
+    XCloseDisplay(this->dpy);
+
+    /*this->dpy = XOpenDisplay(NULL);
 
     XEvent event;
 
@@ -82,7 +114,7 @@ void mrmOSCursor::clickRelease(int key) {
 
     XFlush(this->dpy);
 
-    XCloseDisplay(this->dpy);
+    XCloseDisplay(this->dpy);*/
 }
 
 mrmOSCursor::mrmOSCursor() {
@@ -105,19 +137,19 @@ void mrmOSCursor::sendMotionNotify(int key) {
 
     memset(&event, 0x00, sizeof(event));
 
-    event.xbutton.button = key;
-    event.xbutton.same_screen = True;
-    event.type = MotionNotify | ButtonPress;
+    event.type = MotionNotify;
+    event.xmotion.same_screen = True;
+    event.xmotion.state = Button1Mask;
 
-    XQueryPointer(this->dpy, RootWindow(this->dpy, DefaultScreen(this->dpy)), &event.xbutton.root, &event.xbutton.window, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
+    XQueryPointer(this->dpy, RootWindow(this->dpy, DefaultScreen(this->dpy)), &event.xmotion.root, &event.xmotion.window, &event.xmotion.x_root, &event.xmotion.y_root, &event.xmotion.x, &event.xmotion.y, &event.xmotion.state);
 
-    event.xbutton.subwindow = event.xbutton.window;
+    event.xmotion.subwindow = event.xmotion.window;
 
-    while(event.xbutton.subwindow)
+    while(event.xmotion.subwindow)
     {
-        event.xbutton.window = event.xbutton.subwindow;
+        event.xmotion.window = event.xmotion.subwindow;
 
-        XQueryPointer(this->dpy, event.xbutton.window, &event.xbutton.root, &event.xbutton.subwindow, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
+        XQueryPointer(this->dpy, event.xmotion.window, &event.xmotion.root, &event.xmotion.subwindow, &event.xmotion.x_root, &event.xmotion.y_root, &event.xmotion.x, &event.xmotion.y, &event.xmotion.state);
     }
 
     if(XSendEvent(this->dpy, PointerWindow, True, 0xfff, &event) <= 0){cout << "event send error" << endl;};

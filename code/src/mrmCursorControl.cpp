@@ -67,32 +67,6 @@ int mrmCursorControl::work_event(json work_event) {
                             this->oscursor->releaseMutex();
                         }
                         break;
-                    case BTN_SIDE:
-                        if ((int)work_event["value"]==1) {
-                            this->oscursor->getMutex();
-                            it->clickrunning = Button4;
-                            this->oscursor->setCursor(it->getPosx(), it->getPosy());
-                            this->oscursor->clickPress(Button4);
-                        } else {
-                            this->oscursor->setCursor(it->getPosx(), it->getPosy());
-                            this->oscursor->clickRelease(Button4);
-                            it->clickrunning = 0;
-                            this->oscursor->releaseMutex();
-                        }
-                        break;
-                    case BTN_EXTRA:
-                        if ((int)work_event["value"]==1) {
-                            this->oscursor->getMutex();
-                            it->clickrunning = Button5;
-                            this->oscursor->setCursor(it->getPosx(), it->getPosy());
-                            this->oscursor->clickPress(Button5);
-                        } else {
-                            this->oscursor->setCursor(it->getPosx(), it->getPosy());
-                            this->oscursor->clickRelease(Button5);
-                            it->clickrunning = 0;
-                            this->oscursor->releaseMutex();
-                        }
-                        break;
                 }
             } else if(EV_REL==(int)work_event["type"]){
                 if(REL_X==(int)work_event["code"]){
@@ -114,9 +88,28 @@ int mrmCursorControl::work_event(json work_event) {
                     }
                     it->setPosy(newpos);
                 } else if(REL_WHEEL==(int)work_event["code"]){
-                    cout << "v: " << work_event["value"] << endl;
+                    switch ((int)work_event["value"]) {
+                        case 1:
+                            this->oscursor->getMutex();
+                            it->clickrunning = Button4;
+                            this->oscursor->setCursor(it->getPosx(), it->getPosy());
+                            this->oscursor->clickPress(Button4);
+                            this->oscursor->clickRelease(Button4);
+                            it->clickrunning = 0;
+                            this->oscursor->releaseMutex();
+                            break;
+                        case -1:
+                            this->oscursor->getMutex();
+                            it->clickrunning = Button5;
+                            this->oscursor->setCursor(it->getPosx(), it->getPosy());
+                            this->oscursor->clickPress(Button5);
+                            this->oscursor->clickRelease(Button5);
+                            it->clickrunning = 0;
+                            this->oscursor->releaseMutex();
+                            break;
+                    }
                 }
-                if(it->clickrunning==Button1 || it->clickrunning==Button2 || it->clickrunning==Button3 || it->clickrunning==Button4 || it->clickrunning==Button5){
+                if(it->clickrunning==Button1 || it->clickrunning==Button2 || it->clickrunning==Button3){
                     this->oscursor->setCursor(it->getPosx(), it->getPosy());
                 }
             } else if(EV_ABS==(int)work_event["type"]) {
@@ -153,7 +146,7 @@ int mrmCursorControl::work_event(json work_event) {
                     }
                     it->setPosy(newpos);
                 }
-                if(it->clickrunning==Button1 || it->clickrunning==Button2 || it->clickrunning==Button3 || it->clickrunning==Button4 || it->clickrunning==Button5){
+                if(it->clickrunning==Button1 || it->clickrunning==Button2 || it->clickrunning==Button3){
                     this->oscursor->setCursor(it->getPosx(), it->getPosy());
                 }
             }

@@ -54,14 +54,15 @@ int main(int argc, char** argv) {
     remotescreens = myparser->createScreens(&amountrs);
     cout << "amount: " << amountlm << ", " << amountlc << ", " << amountrc << ", " << amountrs << endl;
     int port = myparser->getUDPPort();
+    string hostip = myparser->getHostIP();
     udpclient = new mrmUDPClient(port);
-    udpserver = new mrmUDPServer(port);
+    udpserver = new mrmUDPServer(port, hostip);
 
     mrm = new mrmMultiRemoteMouse(localmice, amountlm, localcursors, amountlc, remotecursors, amountrc, remotescreens, amountrs, udpclient, udpserver);
 
     mrm->start();
 
-    udpclient->sendtest();
+    //udpclient->sendtest();
 
     while(1){sleep(1);};
 

@@ -31,6 +31,7 @@ public:
     list<mrmScreen> createScreens(int *count);
 
     int getUDPPort();
+    string getHostIP();
 
     string jsonstr;
     json jsonobj;

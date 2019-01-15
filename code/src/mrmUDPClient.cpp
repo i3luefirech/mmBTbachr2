@@ -25,17 +25,9 @@ mrmUDPClient::mrmUDPClient(int port) {
     }
 }
 
-void mrmUDPClient::sendtest() {
-    char dgram[512];
-    sprintf(dgram,"1337\r\n");
-    ssize_t ret = sendto(this->s, dgram, strlen(dgram)+1, 0, (struct sockaddr*) &this->addrout, sizeof(this->addrout));
-}
-
-void mrmUDPClient::sendscreenchange(int direction) {
-
-}
-
 void mrmUDPClient::sendevent(json sendevent) {
-    ssize_t ret = sendto(this->s, &sendevent, sizeof(sendevent), 0, (struct sockaddr*) &this->addrout, sizeof(this->addrout));
+    char dmsg[1024];
+    snprintf(dmsg, 1023, "%s",sendevent.dump(4).c_str());
+    ssize_t ret = sendto(this->s, dmsg, sizeof(char) * (strlen(dmsg)+1), 0, (struct sockaddr*) &this->addrout, sizeof(this->addrout));
 }
 

@@ -26,22 +26,13 @@ void mrmMultiRemoteMouse::start() {
 }
 
 void mrmMultiRemoteMouse::recvMouseEvent(json mouseevent) {
-    switch(this->cursorctrl->work_event(mouseevent)) {
-        case 1:
-            // send via client
-            this->client->sendevent(mouseevent);
-            break;
-        case 2:
-            // send screenchange left
-            this->client->sendscreenchange(0);
-            // send via client
-            this->client->sendevent(mouseevent);
-            break;
-        case 3:
-            // send screenchange right
-            this->client->sendscreenchange(1);
-            // send via client
-            this->client->sendevent(mouseevent);
-            break;
-    }
+    this->cursorctrl->work_event(mouseevent);
+}
+
+void mrmMultiRemoteMouse::sendscreenchange(json scevent) {
+    this->client->sendevent(scevent);
+}
+
+void mrmMultiRemoteMouse::sendmouseevent(json mevent) {
+    this->client->sendevent(mevent);
 }

@@ -25,7 +25,7 @@ list<mrmCursor> mrmCfgParser::createRemoteCursors(int *count) {
         cout << "entry: " << it1.value() << endl;
         json entries = it1.value();
         int array[] = {0,0,0,0,0};
-        retcursor.push_back(mrmCursor(entries["id"], entries["color_r"], entries["color_g"], entries["color_b"], entries["show"], entries["click"], entries["datatf"], array));
+        retcursor.push_back(mrmCursor(entries["id"], entries["color_r"], entries["color_g"], entries["color_b"], entries["show"], entries["click"], entries["datatf"], false, array));
         (*count)++;
     }
     return retcursor;
@@ -36,6 +36,13 @@ int mrmCfgParser::getUDPPort() {
     int count = 0;
     json::iterator it1 = tempjson.begin();
     cout << "port " << it1.value() << endl;
+    return it1.value();
+}
+
+string mrmCfgParser::getHostIP() {
+    auto tempjson = this->jsonobj["hostip"];
+    json::iterator it1 = tempjson.begin();
+    cout << "host: " << it1.value() << endl;
     return it1.value();
 }
 
@@ -64,7 +71,7 @@ list<mrmCursor> mrmCfgParser::createLocalCursors(int *count) {
         json entries = it1.value();
         json::iterator devicenumberarray = entries["devicenumbers"].begin();
         int array[] = {devicenumberarray++.value(),devicenumberarray++.value(),devicenumberarray++.value(),devicenumberarray++.value(),devicenumberarray.value()};
-        retcursors.push_back(mrmCursor(entries["id"], entries["color_r"], entries["color_g"], entries["color_b"], 1, 1, 1, array));
+        retcursors.push_back(mrmCursor(entries["id"], entries["color_r"], entries["color_g"], entries["color_b"], 1, 1, 1, true, array));
         (*count)++;
     }
     return retcursors;

@@ -38,6 +38,7 @@ private:
     GLXWindow glX_window_handle;
     int width, height;
     int posx, posy;
+    bool active;
 public:
     int getPosx() const;
 
@@ -57,7 +58,7 @@ private:
 
     static int VisData[];
 public:
-    mrmCursor(string id, int color_r, int color_g, int color_b, int show, int click, int datatf, int devicenumbers[]);
+    mrmCursor(string id, int color_r, int color_g, int color_b, int show, int click, int datatf, bool active, int devicenumbers[]);
     string getid();
     void run(mrmCursor * cursor);
     void start();
@@ -82,6 +83,8 @@ public:
     int lastabsy;
     int relx;
     int rely;
+
+    bool isactive();
 };
 
 

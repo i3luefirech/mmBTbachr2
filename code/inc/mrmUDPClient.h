@@ -18,11 +18,7 @@ public:
     mrmUDPClient();
     mrmUDPClient(int port);
 
-    void sendtest();
-
     void sendevent(json sendevent);
-
-    void sendscreenchange(int direction);
 };
 
 

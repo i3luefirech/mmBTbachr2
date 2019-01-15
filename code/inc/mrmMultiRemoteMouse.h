@@ -38,6 +38,12 @@ public:
     int tempcount;
 
     void recvMouseEvent(json mouseEvent);
+
+    void sendscreenchange(json scevent);
+
+    void sendmouseevent(json mevent);
+
+    string hostip;
 };
 
 

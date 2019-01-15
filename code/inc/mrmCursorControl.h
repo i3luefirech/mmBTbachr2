@@ -27,6 +27,7 @@ public:
     list<mrmCursor> cursors;
     int amount;
     mrmOSCursor * oscursor;
+    unsigned long amountlocal;
 };
 
 

@@ -65,7 +65,7 @@ int mrmCursor::VisData[] = {
         None
 };
 
-mrmCursor::mrmCursor(string id, int color_r, int color_g, int color_b, int show, int click, int datatf, int devicenumbers[]) {
+mrmCursor::mrmCursor(string id, int color_r, int color_g, int color_b, int show, int click, int datatf, bool active, int devicenumbers[]) {
     this->id = id;
     this->color_r = color_r;
     this->color_g = color_g;
@@ -73,13 +73,14 @@ mrmCursor::mrmCursor(string id, int color_r, int color_g, int color_b, int show,
     this->show = show;
     this->click = click;
     this->datatf = datatf;
-    this->posx = 0;
-    this->posy = 0;
+    this->posx = 15;
+    this->posy = 15;
     this->lastabsx = 0;
     this->lastabsy = 0;
     this->relx = 0;
     this->rely = 0;
     this->clickrunning = 0;
+    this->active = active;
 
     for(int i = 0; i < 5; i++){
         if(devicenumbers[i]!=0){
@@ -379,4 +380,8 @@ int mrmCursor::getrelyfromabs() {
 
 Display *mrmCursor::getDisplay() {
     return this->Xdisplay;
+}
+
+bool mrmCursor::isactive() {
+    return this->active;
 }

@@ -3,7 +3,11 @@
 //
 #include <unistd.h>
 #include <iostream>
+#ifdef __linux__
 #include <linux/input.h>
+#else
+#include "../inc/osinput.h"
+#endif
 #include <fcntl.h>
 #include <cstring>
 #include "../inc/mrmMouse.h"

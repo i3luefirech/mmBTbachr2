@@ -3,7 +3,11 @@
 //
 
 #include <iostream>
+#ifdef __linux__
 #include <linux/input-event-codes.h>
+#else
+#include "../inc/osinput.h"
+#endif
 #include <zconf.h>
 #include "../inc/mrmOSCursor.h"
 #include "../inc/mrmCursorControl.h"
@@ -31,7 +35,8 @@ int mrmCursorControl::work_event(json work_event) {
     int cnt = 0;
     auto it = this->cursors.begin();
     for(; it != this->cursors.end(); it++, cnt++){
-        if(it->id.compare(work_event["id"])==0){
+        string temp = work_event["id"];
+        if(it->id.compare(temp)==0){
             break;
         }
     }

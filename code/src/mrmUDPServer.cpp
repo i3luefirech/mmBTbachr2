@@ -24,9 +24,9 @@ mrmUDPServer::mrmUDPServer(int port, string hostip) {
         cout << "mrmUDPServer: socketinit error" << endl;
     }
 
-    if( (ret = bind( this->s, (struct sockaddr *)&this->addrin, sizeof(this->addrin))) == -1 ){
+    /*if( (ret = */bind( this->s, (struct sockaddr *)&this->addrin, sizeof(this->addrin));/*) == -1 ){
         cout << "mrmUDPServer: bind error " << ret << endl;
-    }
+    }*/
 
     if ( (ret=setsockopt(this->s, SOL_SOCKET, SO_REUSEADDR, &trueflag, sizeof(trueflag))) < 0) {
         cout << "mrmUDPServer: setsockopt " << ret << endl;

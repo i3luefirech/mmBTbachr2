@@ -35,8 +35,8 @@ int mrmCursorControl::work_event(json work_event) {
     int cnt = 0;
     auto it = this->cursors.begin();
     for(; it != this->cursors.end(); it++, cnt++){
-        string temp = work_event["id"];
-        if(it->id.compare(temp)==0){
+        string tempstr = work_event["id"];
+        if(it->id.compare(tempstr)==0){
             break;
         }
     }

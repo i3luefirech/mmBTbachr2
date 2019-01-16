@@ -3,7 +3,11 @@
 //
 
 #include <iostream>
+#include <sstream>
 #include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include "../inc/mrmUDPServer.h"
 #include "../inc/mrmMultiRemoteMouse.h"
 
@@ -24,9 +28,9 @@ mrmUDPServer::mrmUDPServer(int port, string hostip) {
         cout << "mrmUDPServer: socketinit error" << endl;
     }
 
-    /*if( (ret = */bind( this->s, (struct sockaddr *)&this->addrin, sizeof(this->addrin));/*) == -1 ){
-        cout << "mrmUDPServer: bind error " << ret << endl;
-    }*/
+    if( ::bind( this->s, (struct sockaddr *)&this->addrin, sizeof(this->addrin)) < 0){
+        cout << "mrmUDPServer: bind error " << endl;
+    }
 
     if ( (ret=setsockopt(this->s, SOL_SOCKET, SO_REUSEADDR, &trueflag, sizeof(trueflag))) < 0) {
         cout << "mrmUDPServer: setsockopt " << ret << endl;

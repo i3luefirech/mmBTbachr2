@@ -42,8 +42,9 @@ int mrmCursorControl::work_event(json work_event) {
     }
     json type = work_event["type"];
     if(!type.is_number()){
-        string typestr = type.dump(4);
-        if(typestr.compare("screenchange")==0){
+        string typestr = type;
+        int ret = 0;
+        if((ret=typestr.compare("screenchange"))==0){
             // screenchange event
             int direction = (-1 * (int)work_event["leavedirection"]);
             int posx = 1;
@@ -61,7 +62,7 @@ int mrmCursorControl::work_event(json work_event) {
                 it->setPosy(posy);
             }
         }
-
+        cout << "ret: " << ret << endl;
     } else {
         // mouse event
         // check ob aktiv

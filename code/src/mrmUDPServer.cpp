@@ -58,15 +58,18 @@ void mrmUDPServer::run() {
     for (;;) {
         struct sockaddr_in srcaddr;
         socklen_t addrlen = sizeof(srcaddr);
-        ssize_t ret = recvfrom(this->s, dgram, sizeof(dgram), 0, (struct sockaddr *)&srcaddr, &addrlen);
+        ssize_t ret = recvfrom(this->s, dgram, sizeof(char)*1024, 0, (struct sockaddr *)&srcaddr, &addrlen);
+        //ssize_t ret = recv(this->s, dgram, sizeof(char)*1024, 0);
         if (ret < 0) {
             cout << "mrmUDPServer: recv error" << endl;
             break;
         } else {
             if(this->hostip.compare(inet_ntoa(srcaddr.sin_addr))!=0) {
+                if(dgram[0]!='n' && dgram[1]!='u' && dgram[2]!='l' && dgram[3]!='l') {
                 json temp = json::parse(dgram);
                 mrm->recvMouseEvent(temp);
                 cout << "received from: " << inet_ntoa(srcaddr.sin_addr) << endl;
+                }
             }
         }
     }

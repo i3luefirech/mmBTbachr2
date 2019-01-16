@@ -43,7 +43,7 @@ string mrmMultiRemoteMouse::getscreen(int i) {
             return it->getipaddr();
         }
     }
-    return std::__cxx11::string("null");
+    return string("null");
 }
 
 string mrmMultiRemoteMouse::gethostip() {

@@ -8,7 +8,7 @@
 #else
 #include "../inc/osinput.h"
 #endif
-#include <zconf.h>
+
 #include "../inc/mrmOSCursor.h"
 #include "../inc/mrmCursorControl.h"
 #include "../inc/mrmMultiRemoteMouse.h"
@@ -46,7 +46,7 @@ int mrmCursorControl::work_event(json work_event) {
         int ret = 0;
         if((ret=typestr.compare("screenchange"))==0){
             // screenchange event
-            int direction = (-1 * (int)work_event["leavedirection"]);
+            int direction = (int) work_event["leavedirection"];
             int posx = 1;
             if(direction < 0){
                 posx = it->getXMax() - 5;

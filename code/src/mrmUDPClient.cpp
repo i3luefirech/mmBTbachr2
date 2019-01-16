@@ -26,8 +26,6 @@ mrmUDPClient::mrmUDPClient(int port) {
 }
 
 void mrmUDPClient::sendevent(json sendevent) {
-    char dmsg[1024];
-    snprintf(dmsg, 1023, "%s",sendevent.dump(4).c_str());
-    ssize_t ret = sendto(this->s, dmsg, sizeof(char) * (strlen(dmsg)+1), 0, (struct sockaddr*) &this->addrout, sizeof(this->addrout));
+    ssize_t ret = sendto(this->s, sendevent.dump(4).c_str(), sizeof(char) * (strlen(sendevent.dump(4).c_str())+1), 0, (struct sockaddr*) &this->addrout, sizeof(this->addrout));
 }
 

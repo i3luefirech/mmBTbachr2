@@ -315,13 +315,15 @@ void mrmCursor::redrawTheWindow() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glColor3f((1.0f/255)*this->color_r, (1.0f/255)*this->color_g, (1.0f/255)*this->color_b);
 
-    glBegin(GL_TRIANGLES);
+    if(this->isactive()) {
+        glBegin(GL_TRIANGLES);
 
-    glVertex3f(-1.0f,-1.0f,0.0f);
-    glVertex3f(1.0f,1.0f,0.0f);
-    glVertex3f(-1.0f,1.0f,0.0f);
+        glVertex3f(-1.0f, -1.0f, 0.0f);
+        glVertex3f(1.0f, 1.0f, 0.0f);
+        glVertex3f(-1.0f, 1.0f, 0.0f);
 
-    glEnd();
+        glEnd();
+    }
 
     glXSwapBuffers(this->Xdisplay, this->glX_window_handle);
 
@@ -333,7 +335,9 @@ int mrmCursor::getPosx() const {
 }
 
 void mrmCursor::setPosx(int posx) {
-    mrmCursor::posx = posx;
+    if(this->isactive()) {
+        mrmCursor::posx = posx;
+    }
 }
 
 int mrmCursor::getPosy() const {
@@ -341,7 +345,9 @@ int mrmCursor::getPosy() const {
 }
 
 void mrmCursor::setPosy(int posy) {
-    mrmCursor::posy = posy;
+    if(this->isactive()) {
+        mrmCursor::posy = posy;
+    }
 }
 
 int mrmCursor::getXMax() {
@@ -384,4 +390,8 @@ Display *mrmCursor::getDisplay() {
 
 bool mrmCursor::isactive() {
     return this->active;
+}
+
+void mrmCursor::activate(bool active) {
+    this->active = active;
 }

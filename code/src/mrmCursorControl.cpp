@@ -42,9 +42,26 @@ int mrmCursorControl::work_event(json work_event) {
     }
     json type = work_event["type"];
     if(!type.is_number()){
-        // screenchange event
-        // TODO work event
-        // TODO deactivate/activate cursor
+        string typestr = type.dump(4);
+        if(typestr.compare("screenchange")==0){
+            // screenchange event
+            int direction = (-1 * (int)work_event["leavedirection"]);
+            int posx = 1;
+            if(direction < 0){
+                posx = it->getXMax() - 5;
+            } else {
+                posx = 5;
+            }
+            string lastrem = work_event["lastremote"];
+            string newrem = work_event["newremote"];
+            int posy = work_event["ypos"];
+            if(mrm->gethostip().compare(newrem)==0 && mrm->gethostip().compare(lastrem)!=0){
+                it->activate(true);
+                it->setPosx(posx);
+                it->setPosy(posy);
+            }
+        }
+
     } else {
         // mouse event
         // check ob aktiv
@@ -103,14 +120,23 @@ int mrmCursorControl::work_event(json work_event) {
                 // wenn limit erreicht
                 if(limitreached!=0){
                     // wenn remotescreen für seite
-                        json scevent;
+                    json scevent;
+                    scevent["id"]=it->id;
+                    scevent["type"]="screenchange";
+                    scevent["leavedirection"]=limitreached;
+                    scevent["lastremote"]=mrm->gethostip();
+                    scevent["newremote"]=mrm->getscreen(limitreached);
+                    scevent["ypos"]=newy;
+                    if(mrm->getscreen(limitreached).compare("null")!=0){
                         // send screen change
                         mrm->sendscreenchange(scevent);
+                        it->activate(false);
                         if(this->amountlocal>cnt){
                             // ist lokaler event
                             // sendeevent
                             mrm->sendmouseevent(work_event);
                         }
+                    }
                 } else {
                     // steuere cursor
                     it->setPosx(newx);

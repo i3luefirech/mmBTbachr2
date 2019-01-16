@@ -36,3 +36,16 @@ void mrmMultiRemoteMouse::sendscreenchange(json scevent) {
 void mrmMultiRemoteMouse::sendmouseevent(json mevent) {
     this->client->sendevent(mevent);
 }
+
+string mrmMultiRemoteMouse::getscreen(int i) {
+    for(auto it = this->screens.begin(); it != this->screens.end(); it++){
+        if(it->getDirection()==i){
+            return it->getipaddr();
+        }
+    }
+    return std::__cxx11::string("null");
+}
+
+string mrmMultiRemoteMouse::gethostip() {
+    return this->server->hostip;
+}

@@ -85,6 +85,7 @@ public:
     int rely;
 
     bool isactive();
+    void activate(bool activate);
 };
 
 

@@ -14,6 +14,11 @@ class mrmScreen {
 private:
 public:
     mrmScreen(string ip, int pos);
+    int getDirection();
+    string getipaddr();
+
+    string ip;
+    int pos;
 };
 
 

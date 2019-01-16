@@ -44,6 +44,10 @@ public:
     void sendmouseevent(json mevent);
 
     string hostip;
+
+    string getscreen(int i);
+
+    string gethostip();
 };
 
 

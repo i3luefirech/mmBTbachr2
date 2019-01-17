@@ -15,10 +15,17 @@ private:
     int s;
     struct sockaddr_in addrout;
 public:
-    mrmUDPClient();
-
+    /**
+     * create the UDP client on the parameter port
+     *
+     * @param port
+     */
     mrmUDPClient(int port);
 
+    /**
+     * send a event over the network. The event must be given as a json object
+     * @param sendevent
+     */
     void sendevent(json sendevent);
 };
 

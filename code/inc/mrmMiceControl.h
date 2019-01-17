@@ -14,11 +14,12 @@ class mrmMiceControl {
 public:
     mrmMiceControl(list <mrmMouse> localmice, int amount);
 
+    /**
+     * starts all the Thread of the known mice
+     */
     void start();
 
     list <mrmMouse> mice;
-
-    void run();
 
     int amount;
 };

@@ -18,10 +18,18 @@ public:
     mrmCursorControl(list <mrmCursor> localcursors, list <mrmCursor> remotecursors, int amountlc,
                      int amountrc);
 
+    /**
+     * starts all the Thread of the known mice
+     */
     void start(mrmOSCursor *);
 
     list <mrmCursor> getlist();
 
+    /**
+     * receives an event to work with. The event will be processed and given to the correct object
+     * @param work_event
+     * @return
+     */
     int work_event(json work_event);
 
     list <mrmCursor> cursors;

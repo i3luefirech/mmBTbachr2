@@ -5,6 +5,9 @@
 #ifndef CODE_OSINPUT_H
 #define CODE_OSINPUT_H
 
+/**
+ * dummy structer for OSX
+ */
 struct input_event {
     timeval time;
     uint16_t type;

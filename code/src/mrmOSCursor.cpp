@@ -128,36 +128,3 @@ mrmOSCursor::mrmOSCursor() {
 
     XCloseDisplay(this->dpy);
 }
-
-void mrmOSCursor::sendMotionNotify(int key) {
-
-    this->dpy = XOpenDisplay(NULL);
-
-    XEvent event;
-
-    memset(&event, 0x00, sizeof(event));
-
-    event.type = MotionNotify;
-    event.xmotion.same_screen = True;
-    event.xmotion.state = Button1Mask;
-
-    XQueryPointer(this->dpy, RootWindow(this->dpy, DefaultScreen(this->dpy)), &event.xmotion.root,
-                  &event.xmotion.window, &event.xmotion.x_root, &event.xmotion.y_root, &event.xmotion.x,
-                  &event.xmotion.y, &event.xmotion.state);
-
-    event.xmotion.subwindow = event.xmotion.window;
-
-    while (event.xmotion.subwindow) {
-        event.xmotion.window = event.xmotion.subwindow;
-
-        XQueryPointer(this->dpy, event.xmotion.window, &event.xmotion.root, &event.xmotion.subwindow,
-                      &event.xmotion.x_root, &event.xmotion.y_root, &event.xmotion.x, &event.xmotion.y,
-                      &event.xmotion.state);
-    }
-
-    if (XSendEvent(this->dpy, PointerWindow, True, 0xfff, &event) <= 0) { cout << "event send error" << endl; };
-
-    XFlush(this->dpy);
-
-    XCloseDisplay(this->dpy);
-}

@@ -27,14 +27,26 @@ private:
 public:
     struct input_event *ieMouse;
 
+    /**
+     * create the mouse object. It will know which Devicefile to read with the eventfile string parameter.
+     * @param id
+     * @param evenfile
+     */
     mrmMouse(string id, string evenfile);
 
     int mousefile;
     const char *id;
     const char *eventfile;
 
+    /**
+     * starts the Thread which is running the mousobject. The run function wil be called in the thread.
+     */
     void start();
 
+    /**
+     * the run function. This function will bi called from the mouse thread. The run function receives Mousevent packages and send them to our controller
+     * @param mouse
+     */
     void run(mrmMouse *mouse);
 };
 

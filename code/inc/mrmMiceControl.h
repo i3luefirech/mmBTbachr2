@@ -12,11 +12,11 @@
 class mrmMiceControl {
 
 public:
-    mrmMiceControl(list<mrmMouse> localmice, int amount);
+    mrmMiceControl(list <mrmMouse> localmice, int amount);
 
     void start();
 
-    list<mrmMouse> mice;
+    list <mrmMouse> mice;
 
     void run();
 

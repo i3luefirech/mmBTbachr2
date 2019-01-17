@@ -3,12 +3,11 @@
 //
 
 #include "../inc/mrmMultiRemoteMouse.h"
-#include "../inc/mrmMiceControl.h"
-#include "../inc/mrmCursorControl.h"
-#include "../inc/mrmOSCursor.h"
 
-mrmMultiRemoteMouse::mrmMultiRemoteMouse(list<mrmMouse> localmice, int amountlm, list<mrmCursor> localcursors, int amountlc, list<mrmCursor> remotecursors, int amountrc,
-        list<mrmScreen> remotescreens, int amountrs, mrmUDPClient *udpclient, mrmUDPServer *udpserver) {
+mrmMultiRemoteMouse::mrmMultiRemoteMouse(list<mrmMouse> localmice, int amountlm, list<mrmCursor> localcursors,
+                                         int amountlc, list<mrmCursor> remotecursors, int amountrc,
+                                         list<mrmScreen> remotescreens, int amountrs, mrmUDPClient *udpclient,
+                                         mrmUDPServer *udpserver) {
     this->client = udpclient;
     this->server = udpserver;
     this->screens = remotescreens;
@@ -38,8 +37,8 @@ void mrmMultiRemoteMouse::sendmouseevent(json mevent) {
 }
 
 string mrmMultiRemoteMouse::getscreen(int i) {
-    for(auto it = this->screens.begin(); it != this->screens.end(); it++){
-        if(it->getDirection()==i){
+    for (auto it = this->screens.begin(); it != this->screens.end(); it++) {
+        if (it->getDirection() == i) {
             return it->getipaddr();
         }
     }

@@ -2,29 +2,21 @@
 #include <fstream>
 #include <sstream>
 
-#include "../inc/multimouse.h"
-#include "../inc/configparser.h"
 #include "../inc/mrmCfgParser.h"
-#include "../inc/mrmMouse.h"
-#include "../inc/mrmCursor.h"
-#include "../inc/mrmScreen.h"
-#include "../inc/mrmOSCursor.h"
 #include "../inc/mrmMultiRemoteMouse.h"
-#include "../inc/mrmUDPServer.h"
 
 using namespace std;
 
-mrmMultiRemoteMouse * mrm = nullptr;
-multimouse * mm = nullptr;
+mrmMultiRemoteMouse *mrm = nullptr;
 
 string cfgfilename = "../cfg/config.json";
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     // read arg
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i],"-c")==0) {
-            cfgfilename = argv[i+1];
-        } else{
+        if (strcmp(argv[i], "-c") == 0) {
+            cfgfilename = argv[i + 1];
+        } else {
             printf("-cFilenameandpathtoconfig.json\r\n");
         }
     }
@@ -33,7 +25,7 @@ int main(int argc, char** argv) {
     stringstream buffer;
     buffer << input_stream.rdbuf();
     string jsonstr = buffer.str();
-    mrmCfgParser * myparser = new mrmCfgParser(jsonstr);
+    mrmCfgParser *myparser = new mrmCfgParser(jsonstr);
     // parse config
     myparser->parse();
     // create objects
@@ -41,8 +33,8 @@ int main(int argc, char** argv) {
     list<mrmCursor> localcursors;
     list<mrmCursor> remotecursors;
     list<mrmScreen> remotescreens;
-    mrmUDPClient * udpclient;
-    mrmUDPServer * udpserver;
+    mrmUDPClient *udpclient;
+    mrmUDPServer *udpserver;
 
     int amountlm = 0;
     int amountlc = 0;
@@ -58,13 +50,14 @@ int main(int argc, char** argv) {
     udpclient = new mrmUDPClient(port);
     udpserver = new mrmUDPServer(port, hostip);
 
-    mrm = new mrmMultiRemoteMouse(localmice, amountlm, localcursors, amountlc, remotecursors, amountrc, remotescreens, amountrs, udpclient, udpserver);
+    mrm = new mrmMultiRemoteMouse(localmice, amountlm, localcursors, amountlc, remotecursors, amountrc, remotescreens,
+                                  amountrs, udpclient, udpserver);
 
     mrm->start();
 
     //udpclient->sendtest();
 
-    while(1){sleep(1);};
+    while (1) { sleep(1); };
 
     return 0;
 }

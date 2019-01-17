@@ -16,17 +16,17 @@ using json = nlohmann::json;
 class mrmCursorControl {
 public:
     mrmCursorControl(list <mrmCursor> localcursors, list <mrmCursor> remotecursors, int amountlc,
-                         int amountrc);
+                     int amountrc);
 
     void start(mrmOSCursor *);
 
-    list<mrmCursor> getlist();
+    list <mrmCursor> getlist();
 
     int work_event(json work_event);
 
-    list<mrmCursor> cursors;
+    list <mrmCursor> cursors;
     int amount;
-    mrmOSCursor * oscursor;
+    mrmOSCursor *oscursor;
     unsigned long amountlocal;
 };
 

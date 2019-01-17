@@ -6,6 +6,7 @@
 #define CODE_MRMCFGPARSER_H
 
 #include <string>
+#include <list>
 #include "mrmMouse.h"
 #include "mrmCursor.h"
 #include "mrmScreen.h"
@@ -31,6 +32,7 @@ public:
     list<mrmScreen> createScreens(int *count);
 
     int getUDPPort();
+
     string getHostIP();
 
     string jsonstr;

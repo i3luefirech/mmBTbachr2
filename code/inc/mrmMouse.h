@@ -11,24 +11,31 @@ using namespace std;
 
 #include <unistd.h>
 #include <iostream>
+
 #ifdef __linux__
+
 #include <linux/input.h>
+
 #else
 #include "../inc/osinput.h"
 #endif
+
 #include <fcntl.h>
 
 class mrmMouse {
 private:
 public:
-    struct input_event * ieMouse;
+    struct input_event *ieMouse;
+
     mrmMouse(string id, string evenfile);
+
     int mousefile;
-    const char * id;
-    const char * eventfile;
+    const char *id;
+    const char *eventfile;
 
     void start();
-    void run(mrmMouse * mouse);
+
+    void run(mrmMouse *mouse);
 };
 
 

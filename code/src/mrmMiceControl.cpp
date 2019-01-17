@@ -15,7 +15,7 @@ mrmMiceControl::mrmMiceControl(list<mrmMouse> localmice, int amount) {
 
 void mrmMiceControl::start() {
     cout << "mrmMiceControl: start " << this->mice.size() << " , " << amount << endl;
-    for(auto it = this->mice.begin(); it != this->mice.end(); it++){
+    for (auto it = this->mice.begin(); it != this->mice.end(); it++) {
         it->start();
     }
 }

@@ -47,29 +47,45 @@ public:
     int getPosy() const;
 
     void setPosy(int posy);
+
     int getXMax();
+
     int getYMax();
+
     int clickrunning;
 
-    Display * getDisplay();
+    Display *getDisplay();
 
 
 private:
 
     static int VisData[];
 public:
-    mrmCursor(string id, int color_r, int color_g, int color_b, int show, int click, int datatf, bool active, int devicenumbers[]);
+    mrmCursor(string id, int color_r, int color_g, int color_b, int show, int click, int datatf, bool active,
+              int devicenumbers[]);
+
     string getid();
-    void run(mrmCursor * cursor);
+
+    void run(mrmCursor *cursor);
+
     void start();
+
     int updateTheMessageQueue();
+
     void createTheWindow();
+
     void createTheRenderContext();
+
     void redrawTheWindow();
+
     void describe_fbconfig(GLXFBConfig fbconfig);
+
     void setlastabsx(int lastabs);
+
     void setlastabsy(int lastabs);
+
     int getrelxfromabs();
+
     int getrelyfromabs();
 
     string id;
@@ -85,6 +101,7 @@ public:
     int rely;
 
     bool isactive();
+
     void activate(bool activate);
 };
 

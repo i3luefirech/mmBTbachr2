@@ -14,11 +14,17 @@ class mrmOSCursor {
 private:
 public:
     mrmOSCursor();
+
     void getMutex();
+
     void releaseMutex();
+
     void setCursor(int posx, int posy);
+
     void clickPress(int key);
+
     void clickRelease(int key);
+
     void sendMotionNotify(int key);
 
     int posx;

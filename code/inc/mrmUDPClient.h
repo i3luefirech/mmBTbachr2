@@ -6,7 +6,7 @@
 #define CODE_MRMUDPCLIENT_H
 
 #include <netinet/in.h>
-#include "configparser.h"
+#include "../inc/mrmCfgParser.h"
 
 
 class mrmUDPClient {
@@ -16,6 +16,7 @@ private:
     struct sockaddr_in addrout;
 public:
     mrmUDPClient();
+
     mrmUDPClient(int port);
 
     void sendevent(json sendevent);

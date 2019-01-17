@@ -3,20 +3,16 @@
 //
 
 #include <iostream>
-#include <sstream>
 #include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include "../inc/mrmUDPServer.h"
 #include "../inc/mrmMultiRemoteMouse.h"
 
 using namespace std;
 
-extern mrmMultiRemoteMouse * mrm;
+extern mrmMultiRemoteMouse *mrm;
 
 mrmUDPServer::mrmUDPServer(int port, string hostip) {
-    this->s = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
+    this->s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     cout << "mrmUDPServer: socket = " << this->s << endl;
     this->addrin.sin_family = AF_INET;
     this->addrin.sin_port = htons(port);
@@ -24,22 +20,22 @@ mrmUDPServer::mrmUDPServer(int port, string hostip) {
     this->hostip = hostip;
     int ret = 0;
     int trueflag = 1;
-    if ( this->s == -1 ) {
+    if (this->s == -1) {
         cout << "mrmUDPServer: socketinit error" << endl;
     }
 
-    if( ::bind( this->s, (struct sockaddr *)&this->addrin, sizeof(this->addrin)) < 0){
+    if (::bind(this->s, (struct sockaddr *) &this->addrin, sizeof(this->addrin)) < 0) {
         cout << "mrmUDPServer: bind error " << endl;
     }
 
-    if ( (ret=setsockopt(this->s, SOL_SOCKET, SO_REUSEADDR, &trueflag, sizeof(trueflag))) < 0) {
+    if ((ret = setsockopt(this->s, SOL_SOCKET, SO_REUSEADDR, &trueflag, sizeof(trueflag))) < 0) {
         cout << "mrmUDPServer: setsockopt " << ret << endl;
     }
 }
 
 void *ThreadUDPServer(void *pVoid) {
 
-    mrmUDPServer* server = static_cast<mrmUDPServer*>(pVoid);
+    mrmUDPServer *server = static_cast<mrmUDPServer *>(pVoid);
     server->run();
 
     pthread_exit(nullptr);
@@ -49,7 +45,7 @@ void mrmUDPServer::start() {
     cout << "mrmUDPServer: start" << endl;
     pthread_t thread;
     // start Client
-    pthread_create( &thread, nullptr, ThreadUDPServer, static_cast<void*>(this));
+    pthread_create(&thread, nullptr, ThreadUDPServer, static_cast<void *>(this));
 }
 
 void mrmUDPServer::run() {
@@ -58,17 +54,17 @@ void mrmUDPServer::run() {
     for (;;) {
         struct sockaddr_in srcaddr;
         socklen_t addrlen = sizeof(srcaddr);
-        ssize_t ret = recvfrom(this->s, dgram, sizeof(char)*1024, 0, (struct sockaddr *)&srcaddr, &addrlen);
+        ssize_t ret = recvfrom(this->s, dgram, sizeof(char) * 1024, 0, (struct sockaddr *) &srcaddr, &addrlen);
         //ssize_t ret = recv(this->s, dgram, sizeof(char)*1024, 0);
         if (ret < 0) {
             cout << "mrmUDPServer: recv error" << endl;
             break;
         } else {
-            if(this->hostip.compare(inet_ntoa(srcaddr.sin_addr))!=0) {
-                if(dgram[0]!='n' && dgram[1]!='u' && dgram[2]!='l' && dgram[3]!='l') {
-                json temp = json::parse(dgram);
-                mrm->recvMouseEvent(temp);
-                cout << "received from: " << inet_ntoa(srcaddr.sin_addr) << endl;
+            if (this->hostip.compare(inet_ntoa(srcaddr.sin_addr)) != 0) {
+                if (dgram[0] != 'n' && dgram[1] != 'u' && dgram[2] != 'l' && dgram[3] != 'l') {
+                    json temp = json::parse(dgram);
+                    mrm->recvMouseEvent(temp);
+                    cout << "received from: " << inet_ntoa(srcaddr.sin_addr) << endl;
                 }
             }
         }

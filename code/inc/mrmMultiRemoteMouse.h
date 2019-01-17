@@ -24,7 +24,8 @@ private:
     mrmUDPClient *client;
     mrmUDPServer *server;
 public:
-    mrmMultiRemoteMouse(list<mrmMouse> localmice, int amountlm, list<mrmCursor> localcursors, int amountlc, list<mrmCursor> remotecursors, int amountrc,
+    mrmMultiRemoteMouse(list<mrmMouse> localmice, int amountlm, list<mrmCursor> localcursors, int amountlc,
+                        list<mrmCursor> remotecursors, int amountrc,
                         list<mrmScreen> remotescreens, int amountrs, mrmUDPClient *udpclient, mrmUDPServer *udpserver);
 
     list<mrmScreen> screens;

@@ -28,13 +28,13 @@ void mrmOSCursor::getMutex() {
 
 void mrmOSCursor::clickPress(int key) {
 
-    if(!(this->dpy = XOpenDisplay(NULL))) {
+    if (!(this->dpy = XOpenDisplay(NULL))) {
         fprintf(stderr, "Cannot open display \"%s\".\n", XDisplayName(NULL));
         exit(EXIT_FAILURE);
     }
 
     int ignore;
-    if(!(XQueryExtension(this->dpy, "XTEST", &ignore, &ignore, &ignore))) {
+    if (!(XQueryExtension(this->dpy, "XTEST", &ignore, &ignore, &ignore))) {
         fprintf(stderr, "You do not have the \"XTEST\" extension enabled on your current display.\n");
         exit(EXIT_FAILURE);
     }
@@ -74,13 +74,13 @@ void mrmOSCursor::clickPress(int key) {
 void mrmOSCursor::clickRelease(int key) {
 
 
-    if(!(this->dpy = XOpenDisplay(NULL))) {
+    if (!(this->dpy = XOpenDisplay(NULL))) {
         fprintf(stderr, "Cannot open display \"%s\".\n", XDisplayName(NULL));
         exit(EXIT_FAILURE);
     }
 
     int ignore;
-    if(!(XQueryExtension(this->dpy, "XTEST", &ignore, &ignore, &ignore))) {
+    if (!(XQueryExtension(this->dpy, "XTEST", &ignore, &ignore, &ignore))) {
         fprintf(stderr, "You do not have the \"XTEST\" extension enabled on your current display.\n");
         exit(EXIT_FAILURE);
     }
@@ -141,18 +141,21 @@ void mrmOSCursor::sendMotionNotify(int key) {
     event.xmotion.same_screen = True;
     event.xmotion.state = Button1Mask;
 
-    XQueryPointer(this->dpy, RootWindow(this->dpy, DefaultScreen(this->dpy)), &event.xmotion.root, &event.xmotion.window, &event.xmotion.x_root, &event.xmotion.y_root, &event.xmotion.x, &event.xmotion.y, &event.xmotion.state);
+    XQueryPointer(this->dpy, RootWindow(this->dpy, DefaultScreen(this->dpy)), &event.xmotion.root,
+                  &event.xmotion.window, &event.xmotion.x_root, &event.xmotion.y_root, &event.xmotion.x,
+                  &event.xmotion.y, &event.xmotion.state);
 
     event.xmotion.subwindow = event.xmotion.window;
 
-    while(event.xmotion.subwindow)
-    {
+    while (event.xmotion.subwindow) {
         event.xmotion.window = event.xmotion.subwindow;
 
-        XQueryPointer(this->dpy, event.xmotion.window, &event.xmotion.root, &event.xmotion.subwindow, &event.xmotion.x_root, &event.xmotion.y_root, &event.xmotion.x, &event.xmotion.y, &event.xmotion.state);
+        XQueryPointer(this->dpy, event.xmotion.window, &event.xmotion.root, &event.xmotion.subwindow,
+                      &event.xmotion.x_root, &event.xmotion.y_root, &event.xmotion.x, &event.xmotion.y,
+                      &event.xmotion.state);
     }
 
-    if(XSendEvent(this->dpy, PointerWindow, True, 0xfff, &event) <= 0){cout << "event send error" << endl;};
+    if (XSendEvent(this->dpy, PointerWindow, True, 0xfff, &event) <= 0) { cout << "event send error" << endl; };
 
     XFlush(this->dpy);
 

@@ -3,8 +3,11 @@
 //
 
 #include <iostream>
+
 #ifdef __linux__
+
 #include <linux/input-event-codes.h>
+
 #else
 #include "../inc/osinput.h"
 #endif
@@ -13,20 +16,20 @@
 #include "../inc/mrmCursorControl.h"
 #include "../inc/mrmMultiRemoteMouse.h"
 
-extern mrmMultiRemoteMouse * mrm;
+extern mrmMultiRemoteMouse *mrm;
 
-mrmCursorControl::mrmCursorControl(list <mrmCursor> localcursors, list <mrmCursor> remotecursors, int amountlc,
+mrmCursorControl::mrmCursorControl(list<mrmCursor> localcursors, list<mrmCursor> remotecursors, int amountlc,
                                    int amountrc) {
     this->cursors = localcursors;
     this->amountlocal = localcursors.size();
     this->cursors.insert(this->cursors.end(), remotecursors.begin(), remotecursors.end());
-    this->amount = amountlc+amountrc;
+    this->amount = amountlc + amountrc;
 }
 
-void mrmCursorControl::start(mrmOSCursor * oscursor) {
+void mrmCursorControl::start(mrmOSCursor *oscursor) {
     this->oscursor = oscursor;
     cout << "mrmCursorControl: start " << this->cursors.size() << " , " << amount << endl;
-    for(auto it = this->cursors.begin(); it != this->cursors.end(); it++){
+    for (auto it = this->cursors.begin(); it != this->cursors.end(); it++) {
         it->start();
     }
 }
@@ -34,21 +37,21 @@ void mrmCursorControl::start(mrmOSCursor * oscursor) {
 int mrmCursorControl::work_event(json work_event) {
     int cnt = 0;
     auto it = this->cursors.begin();
-    for(; it != this->cursors.end(); it++, cnt++){
+    for (; it != this->cursors.end(); it++, cnt++) {
         string tempstr = work_event["id"];
-        if(it->id.compare(tempstr)==0){
+        if (it->id.compare(tempstr) == 0) {
             break;
         }
     }
     json type = work_event["type"];
-    if(!type.is_number()){
+    if (!type.is_number()) {
         string typestr = type;
         int ret = 0;
-        if((ret=typestr.compare("screenchange"))==0){
+        if ((ret = typestr.compare("screenchange")) == 0) {
             // screenchange event
             int direction = (int) work_event["leavedirection"];
             int posx = 1;
-            if(direction < 0){
+            if (direction < 0) {
                 posx = it->getXMax() - 5;
             } else {
                 posx = 5;
@@ -56,7 +59,7 @@ int mrmCursorControl::work_event(json work_event) {
             string lastrem = work_event["lastremote"];
             string newrem = work_event["newremote"];
             int posy = work_event["ypos"];
-            if(mrm->gethostip().compare(newrem)==0 && mrm->gethostip().compare(lastrem)!=0){
+            if (mrm->gethostip().compare(newrem) == 0 && mrm->gethostip().compare(lastrem) != 0) {
                 it->activate(true);
                 it->setPosx(posx);
                 it->setPosy(posy);
@@ -66,24 +69,25 @@ int mrmCursorControl::work_event(json work_event) {
     } else {
         // mouse event
         // check ob aktiv
-        if(it->isactive()){
+        if (it->isactive()) {
             // check ob bewegungsevent
-            if((EV_REL==(int)work_event["type"] && REL_WHEEL!=(int)work_event["code"]) || (EV_ABS==(int)work_event["type"] && ABS_WHEEL!=(int)work_event["code"])){
+            if ((EV_REL == (int) work_event["type"] && REL_WHEEL != (int) work_event["code"]) ||
+                (EV_ABS == (int) work_event["type"] && ABS_WHEEL != (int) work_event["code"])) {
                 int newx = it->getPosx(), newy = it->getPosy();
                 int relx, rely;
                 int absx, absy;
                 int limitreached = 0;
                 // check ob relativ
-                if(EV_REL==(int)work_event["type"]){
+                if (EV_REL == (int) work_event["type"]) {
                     // relativ
-                    if(REL_X==(int)work_event["code"]) {
+                    if (REL_X == (int) work_event["code"]) {
                         newx = it->getPosx() + (int) work_event["value"];
-                    } else if(REL_Y==(int)work_event["code"]){
+                    } else if (REL_Y == (int) work_event["code"]) {
                         newy = it->getPosy() + (int) work_event["value"];
                     }
                 } else {
                     // absolut
-                    if(ABS_X==(int)work_event["code"]) {
+                    if (ABS_X == (int) work_event["code"]) {
                         it->setlastabsx((int) work_event["value"]);
                         int relval = it->getrelxfromabs();
                         if (relval < -100) {
@@ -92,7 +96,7 @@ int mrmCursorControl::work_event(json work_event) {
                             relval = 100;
                         }
                         newx = it->getPosx() - relval;
-                    } else if(ABS_Y==(int)work_event["code"]) {
+                    } else if (ABS_Y == (int) work_event["code"]) {
                         it->setlastabsy((int) work_event["value"]);
                         int relval = it->getrelyfromabs();
                         if (relval < -70) {
@@ -100,39 +104,39 @@ int mrmCursorControl::work_event(json work_event) {
                         } else if (relval > 70) {
                             relval = 70;
                         }
-                        newy = it->getPosy()-relval;
+                        newy = it->getPosy() - relval;
                     }
                 }
                 // check limits
-                if(newx<0){
-                    newx=0;
+                if (newx < 0) {
+                    newx = 0;
                     limitreached = -1;
                 }
-                if(newx>it->getXMax()-1){
-                    newx=it->getXMax()-1;
+                if (newx > it->getXMax() - 1) {
+                    newx = it->getXMax() - 1;
                     limitreached = 1;
                 }
-                if(newy<0){
-                    newy=0;
+                if (newy < 0) {
+                    newy = 0;
                 }
-                if(newy>it->getYMax()-1){
-                    newy=it->getYMax()-1;
+                if (newy > it->getYMax() - 1) {
+                    newy = it->getYMax() - 1;
                 }
                 // wenn limit erreicht
-                if(limitreached!=0){
+                if (limitreached != 0) {
                     // wenn remotescreen für seite
                     json scevent;
-                    scevent["id"]=it->id;
-                    scevent["type"]="screenchange";
-                    scevent["leavedirection"]=limitreached;
-                    scevent["lastremote"]=mrm->gethostip();
-                    scevent["newremote"]=mrm->getscreen(limitreached);
-                    scevent["ypos"]=newy;
-                    if(mrm->getscreen(limitreached).compare("null")!=0){
+                    scevent["id"] = it->id;
+                    scevent["type"] = "screenchange";
+                    scevent["leavedirection"] = limitreached;
+                    scevent["lastremote"] = mrm->gethostip();
+                    scevent["newremote"] = mrm->getscreen(limitreached);
+                    scevent["ypos"] = newy;
+                    if (mrm->getscreen(limitreached).compare("null") != 0) {
                         // send screen change
                         mrm->sendscreenchange(scevent);
                         it->activate(false);
-                        if(this->amountlocal>cnt){
+                        if (this->amountlocal > cnt) {
                             // ist lokaler event
                             // sendeevent
                             mrm->sendmouseevent(work_event);
@@ -144,10 +148,10 @@ int mrmCursorControl::work_event(json work_event) {
                     it->setPosy(newy);
                 }
             } else {
-                if(EV_KEY==(int)work_event["type"]) {
-                    switch ((int)work_event["code"]) {
+                if (EV_KEY == (int) work_event["type"]) {
+                    switch ((int) work_event["code"]) {
                         case BTN_LEFT:
-                            if ((int)work_event["value"]==1) {
+                            if ((int) work_event["value"] == 1) {
                                 this->oscursor->getMutex();
                                 it->clickrunning = Button1;
                                 this->oscursor->setCursor(it->getPosx(), it->getPosy());
@@ -160,7 +164,7 @@ int mrmCursorControl::work_event(json work_event) {
                             }
                             break;
                         case BTN_RIGHT:
-                            if ((int)work_event["value"]==1) {
+                            if ((int) work_event["value"] == 1) {
                                 this->oscursor->getMutex();
                                 it->clickrunning = Button3;
                                 this->oscursor->setCursor(it->getPosx(), it->getPosy());
@@ -173,7 +177,7 @@ int mrmCursorControl::work_event(json work_event) {
                             }
                             break;
                         case BTN_MIDDLE:
-                            if ((int)work_event["value"]==1) {
+                            if ((int) work_event["value"] == 1) {
                                 this->oscursor->getMutex();
                                 it->clickrunning = Button2;
                                 this->oscursor->setCursor(it->getPosx(), it->getPosy());
@@ -186,31 +190,31 @@ int mrmCursorControl::work_event(json work_event) {
                             }
                             break;
                     }
-                } else if(REL_WHEEL==(int)work_event["code"] || ABS_WHEEL==(int)work_event["code"]) {
-                    if (1==(int)work_event["value"]) {
+                } else if (REL_WHEEL == (int) work_event["code"] || ABS_WHEEL == (int) work_event["code"]) {
+                    if (1 == (int) work_event["value"]) {
                         it->clickrunning = Button4;
                         this->oscursor->setCursor(it->getPosx(), it->getPosy());
                         this->oscursor->clickPress(Button4);
                         this->oscursor->clickRelease(Button4);
                         it->clickrunning = 0;
-                    } else if(-1==(int)work_event["value"]) {
-                            it->clickrunning = Button5;
+                    } else if (-1 == (int) work_event["value"]) {
+                        it->clickrunning = Button5;
                         this->oscursor->setCursor(it->getPosx(), it->getPosy());
                         this->oscursor->clickPress(Button5);
                         this->oscursor->clickRelease(Button5);
-                            it->clickrunning = 0;
+                        it->clickrunning = 0;
                     }
                 }
             }
         } else {
             // wenn inaktiv
-            if(this->amountlocal>cnt){
+            if (this->amountlocal > cnt) {
                 // ist lokaler event
                 // sendeevent
                 mrm->sendmouseevent(work_event);
             }
         }
-        if(it->clickrunning==Button1 || it->clickrunning==Button2 || it->clickrunning==Button3){
+        if (it->clickrunning == Button1 || it->clickrunning == Button2 || it->clickrunning == Button3) {
             this->oscursor->setCursor(it->getPosx(), it->getPosy());
         }
     }
